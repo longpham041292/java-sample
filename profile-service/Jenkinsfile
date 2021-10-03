@@ -1,0 +1,26 @@
+node {
+    stage("Checkout - ${env.BRANCH_NAME}") {
+        checkout scm
+    }
+
+    stage('Build and create docker image'){
+        sh './gradlew clean docker'
+    }
+
+    def namespace = "${env.DEV_NS}"
+    if ("${env.BRANCH_NAME}" == "release/qc") {
+        namespace = "${env.QC_NS}"
+    }
+
+    stage("Tag docker image - ${namespace}/profile-service"){
+        sh "docker tag f8/profile-service ${env.REGISTRY}/${namespace}/profile-service"
+    }
+
+    stage("Push docker image - ${namespace}/profile-service") {
+        sh "docker push ${env.REGISTRY}/${namespace}/profile-service"
+    }
+
+    stage("Cleanup") {
+        sh "docker rmi ${env.REGISTRY}/${namespace}/profile-service"
+    }
+}

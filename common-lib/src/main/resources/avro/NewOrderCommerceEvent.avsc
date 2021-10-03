@@ -1,0 +1,19 @@
+{
+    "namespace": "asia.cmg.f8.session",
+    "type": "record",
+    "name": "NewOrderCommerceEvent",
+    "fields": [
+        { "name": "eventId", "type": "string" },
+        { "name": "orderId", "type": "string" },
+        { "name": "orderCode", "type": "string" },
+        { "name": "createdDate", "type": "long" },
+        { "name": "numberOfSession", "type": "int" },
+        { "name": "expireLimit", "type": "int" },
+        { "name": "packagePrice", "type": "double" },
+        { "name": "commission", "type": "double" },
+        { "name": "currency", "type": "string" },
+        { "name": "userUuid", "type": "string" },
+        { "name": "ptUuid", "type": "string" },
+        { "name": "submittedAt", "type": "long" }
+    ]
+}

@@ -1,0 +1,12 @@
+{
+    "namespace": "asia.cmg.f8.common.event",
+    "type": "record",
+    "name": "OrderCreditCompletedEvent",
+    "fields": [
+        { "name": "orderId", "type": "long" },
+        { "name": "ownerUuid", "type": "string" },
+        { "name": "creditPackageTye", "type": "string" },
+        { "name": "credit", "type": "int" },
+        { "name": "limitDay", "type": "int"}
+    ]
+}

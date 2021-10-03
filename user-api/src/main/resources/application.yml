@@ -1,0 +1,150 @@
+server:
+  port: 9998
+locationapi:
+  url : http://api.ipstack.com/
+  key : f499a760ff90b7f2928d0d7ee018bc4b
+feign:
+  url: ${USERGRID_ENDPOINT:http://35.247.138.162:8080}/${ORG_NAME:cmg}/${APP_NAME:f8}
+  connectTimeoutMillis: ${FEIGN_CONNECT_TIMEOUT:60000}
+  readTimeoutMillis: ${FEIGN_READ_TIMEOUT:60000}
+hystrix:
+  threadpool:
+      default:
+        # Maximum number of concurrent requests when using thread pools (Default: 10)
+        coreSize: ${HYSTRIX_THREAD_POOL_SIZE:500}
+        # Maximum LinkedBlockingQueue size - -1 for using SynchronousQueue (Default: -1)
+        maxQueueSize: -1
+  command:
+        default:
+          execution:
+            timeout:
+              enabled: false
+            isolation:
+              #          strategy: SEMAPHORE, no thread pool but timeout handling stops to work
+              strategy: THREAD
+              thread:
+                timeoutInMilliseconds: ${THREAD_TIME_OUT:600000}
+          fallback:
+            isolation:
+              semaphore:
+                maxConcurrentRequests: ${HYSTRIX_THREAD_POOL_SIZE:200}
+
+userapi:
+  userGridClientId: ${USERGRID_CLIENTID:YXA6lbnfWtKQEei_9gpYCoAAaw}
+  userGridClientSecret: ${USERGRID_CLIENTSECRET:YXA6khvrxqKqt0ytw-WG_OF8RzOk2KY}
+  admin:
+    userLoad: 20
+    maxLoad: 50
+  activeSuccessText: successfully activated
+  passActivated: ${PASS_ACTIVATED:true}
+  dateTimeFormat: ${DATE_TIME_FORMAT:dd/MM/yyyy hh:mm a}
+  defaultProfilePicture: ${DEFAULT_PROFILE_PICTURE:https://qc-web-f8.pycogroup.com/assets/images/profile.png}
+  allowUpdatePictureServiceRunning: ${ALLOW_UPDATE_PROFILE_PICTURE_SERVICE_RUNNING:true}
+  activatedUserUrl: ${USERGRID_ENDPOINT:http://localhost:8080}/${ORG_NAME:cmg}/${APP_NAME:f8}
+  defaultGroupId: ${DEFAULT_GROUP_ID:ef8fd92b-448d-11e9-a532-0a580a8200be}
+  euGroupId: ${EU_GROUP_ID:b3acbf6e-4acb-11e9-a532-0a580a8200be}
+  ptGroupId: ${PT_GROUP_ID:bc6961b3-4acb-11e9-a532-0a580a8200be}
+  clubGroupId: ${CLUB_GROUP_ID:72f838d9-15b7-11ea-a0d3-0a580a820367}
+spring.cloud.stream.kafka.binder:
+  zkNodes: ${ZOOKEEPER_ENDPOINT:54.254.246.56:2181}
+  brokers: ${KAFKABROKER_ENDPOINT:54.254.246.56:9092}
+    
+spring:
+  application.name: user-api
+  sleuth:
+    feign:
+      enabled: false
+    integration:
+      enabled: false
+    rxjava:
+      schedulers:
+        hook:
+          enabled: false
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+    url: jdbc:mysql://${DATABASE_URL:54.254.246.56:3306}/${DB_NAME:f8}?useUnicode=true&characterEncoding=utf8&useLegacyDatetimeCode=false&serverTimezone=UTC
+    username: ${DB_USER:root}
+    password: ${DB_PWD:YXA6khvrxqKqt0ytw-WG_OF8RzOk2KY}
+    initialize: false
+    hikari:
+      maximum-pool-size: ${CONNECTION_POOL_SIZE:10}
+      minimum-idle: 2
+  jpa:
+    database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
+    database: MYSQL
+    show-sql: ${HIBERNATE_SHOW_SQL:true}
+    hibernate:
+      ddl-auto: ${HIBERNATE_DDL_AUTO:update}
+    properties:
+      hibernate.cache.use_query_cache: true
+      hibernate.cache.region.factory_class: org.hibernate.cache.ehcache.EhCacheRegionFactory
+  cloud:
+    stream:
+      bindings:
+        submitDocumentOut:
+          destination: SubmitDocumentTopic
+          contentType: avro/bytes
+        changeUserOut:
+          destination: userInfoTopic
+          contentType: avro/bytes
+        signUpUserOut:
+          destination: signUpTopic
+          contentType: avro/bytes
+        signUpUserIn:
+          destination: signUpTopic
+          contentType: avro/bytes
+          group: signUpGroup
+        userActivatedOut:
+          destination: UserActivatedTopic
+          contentType: avro/bytes
+        userActivateOrDeactivateOut:
+          destination: userActivateOrDeactivateTopic
+          contentType: avro/bytes
+          group: userActivateOrDeactivateGroup
+        adminApprovedDocumentOutput:
+          destination: adminApprovedDocumentTopic
+          contentType: avro/bytes
+          group: userAdminApprovedDocumentGroup
+        unApprovedDocumentOutput:
+          destination: unApprovedDocumentTopic
+          contentType: avro/bytes
+          group: unApprovedDocumentGroup
+  hateoas:
+    useHalAsDefaultJsonMediaType: false
+
+service:
+  sessionUrl: ${SESSION_ENDPOINT:http://localhost:8082}
+management:
+  context-path: /user-management/actuator  
+jwt:
+  keyPass: qTGMvb7NohPPEhGytqi2LGyw4QNepaCH2MLTfsVwAL2FxCHYeTpi632V7u6UPAzz
+  access_expiresIn: ${ACCESS_EXPIRES_IN:86400000}
+  refresh_expiresIn: ${REFRESH_EXPIRES_IN:604800000}
+  alias: f8
+#logging.level.asia.cmg.f8.user.client.UserClient: DEBUG
+logging.level.org.springframework.web.filter.CommonsRequestLoggingFilter: DEBUG
+logging.pattern.console: "%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%thread] %logger{20} %class{20}.%M:%L - %msg%n"
+security.apple:
+  client_secret_key: ${APPLE_SECRET_KEY:eyJraWQiOiJGOFk1S1lRNzJVIiwiYWxnIjoiRVMyNTYifQ.eyJpc3MiOiJaRjQ3NjNOMldDIiwiaWF0IjoxNTk5MTMwNjYyLCJleHAiOjE2MTQ2ODI2NjIsImF1ZCI6Imh0dHBzOi8vYXBwbGVpZC5hcHBsZS5jb20iLCJzdWIiOiJjb20uZjhmaXQuZjhxYyJ9.s0iyWedYXXn1OYZ1Xb9OWi91xt1NN3ehhZZR0YEErCJ_cvObpoWYdMhcj9rRSDFC8TaCpGInVvWA3IEDJMJtrA}
+  client_id: ${APPLE_CLIENT_ID:com.f8fit.f8qc}
+
+otp:
+  saltSecret: ${OTP_SALT_SECRET:KPO2HV2R7I4XLGLJ}
+  timeStepSizeInSecond: ${OTP_TIME_STEP_SIZE_IN_SECOND:30}
+  windowSize: ${OTP_WINDOW_SIZE:4}
+  messageEn: ${CMC_SMS_MESSAGE_EN:JSVjb2RlJSUgaXMgeW91ciBMRUVQLkFQUCB2ZXJpZmljYXRpb24gY29kZS4gSXQgZXhwaXJlcyBpbiAyIG1pbnV0ZXMuIERvIG5vdCBzaGFyZSBpdCB3aXRoIGFueW9uZS4=}
+  messageVi: ${CMC_SMS_MESSAGE_VI:JSVjb2RlJSUgbGEgbWEgeGFjIHRodWMgdGFpIGtob2FuIExFRVAuQVBQIGN1YSBiYW4uIE1hIHhhYyB0aHVjIHNlIGhldCBoYW4gdHJvbmcgMiBwaHV0LiBLaG9uZyBjaGlhIHNlIG1hIHhhYyB0aHVjIG5heSB2b2kgYmF0IGt5IGFpLg==}
+  cmcSms:
+    url: ${CMC_SMS_URL:http://124.158.14.49/CMC_RF/api/sms/Send}
+    brandname: ${CMS_SMS_BRANCHNAME:LEEP.APP}
+    user: ${CMC_SMS_USER:ctyleepapp}
+    pass: ${CMC_SMS_PASS:2DsDaKqR}
+mail:
+  resetPassword:
+    url: ${MAIL_URL:https://leep.app/reset-password?token=}
+    logoUrl: ${LOGO_URL:https://leep.imgix.net/2020/10/leep-logo.png?fm=png&ixlib=php-1.2.1}
+    appStore: ${APP_STORE:https://leep.imgix.net/2020/10/app-store-badge.png?fm=png&ixlib=php-1.2.1}
+    googlePlay: ${GOOGLE_PLAY:https://leep.imgix.net/2020/10/google-play-badge.png?fm=png&ixlib=php-1.2.1}
+    decor: ${DECOR:https://leep.imgix.net/2020/10/group-2.png?fm=png&ixlib=php-1.2.1}
+    divider: ${DIVIDER:https://leep.imgix.net/2020/10/slash.png?fm=png&ixlib=php-1.2.1}
+    contact: ${CONTACT:https://leep.imgix.net/2020/10/phone.png?fm=png&ixlib=php-1.2.1}

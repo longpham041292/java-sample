@@ -1,0 +1,10 @@
+{
+    "namespace": "asia.cmg.f8.common.event.user",
+    "type": "record",
+    "name": "AdminApprovedDocumentEvent",
+    "fields": [
+        { "name": "eventId", "type": "string" },
+        { "name": "submittedAt", "type": "long" },
+        { "name": "trainerUuid", "type": "string" }
+    ]
+}

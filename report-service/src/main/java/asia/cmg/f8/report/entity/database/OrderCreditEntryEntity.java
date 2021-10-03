@@ -1,0 +1,129 @@
+package asia.cmg.f8.report.entity.database;
+
+import java.time.LocalDateTime;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+
+import org.hibernate.annotations.CreationTimestamp;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+@Entity
+@Table(name = "order_credit_entries")
+public class OrderCreditEntryEntity {
+
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
+	
+	@ManyToOne (fetch = FetchType.LAZY)
+	@JoinColumn(name = "order_id", nullable = false)
+	private OrderEntity order;
+	
+	@ManyToOne (fetch = FetchType.LAZY)
+	@JoinColumn(name = "credit_package_id", nullable = false)
+	@JsonProperty("credit_package")
+	private CreditPackageEntity creditPackage;
+	
+	@Column(name = "quantity", columnDefinition = "int not null default 1")
+	private Integer quantity;
+	
+	@Column(name = "unit_price", columnDefinition = "double not null default 0")
+	@JsonProperty("unit_price")
+	private Double unitPrice;
+	
+	@Column(name = "owner_uuid")
+	@JsonProperty("owner_uuid")
+	private String ownerUuid;
+	
+	@Column(name = "referral_user_uuid", length = 50)
+	@JsonProperty("referral_user_uuid")
+	private String referrallUuid;
+	
+	@Column(name = "referral_username", length = 100)
+	@JsonProperty("referral_username")
+	private String referralUsername;
+	
+	@CreationTimestamp
+    @Column(name = "created_date", nullable = false, updatable = false)
+    @JsonIgnore
+    private LocalDateTime createdDate;
+	
+	@CreationTimestamp
+    @Column(name = "modified_date", nullable = false)
+    @JsonIgnore
+    private LocalDateTime modifiedDate;
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public OrderEntity getOrder() {
+		return order;
+	}
+
+	public void setOrder(OrderEntity order) {
+		this.order = order;
+	}
+
+	public CreditPackageEntity getCreditPackage() {
+		return creditPackage;
+	}
+
+	public void setCreditPackage(CreditPackageEntity creditPackage) {
+		this.creditPackage = creditPackage;
+	}
+
+	public Integer getQuantity() {
+		return quantity;
+	}
+
+	public void setQuantity(Integer quantity) {
+		this.quantity = quantity;
+	}
+
+	public Double getUnitPrice() {
+		return unitPrice;
+	}
+
+	public void setUnitPrice(Double unitPrice) {
+		this.unitPrice = unitPrice;
+	}
+
+	public String getOwnerUuid() {
+		return ownerUuid;
+	}
+
+	public void setOwnerUuid(String ownerUuid) {
+		this.ownerUuid = ownerUuid;
+	}
+
+	public String getReferrallUuid() {
+		return referrallUuid;
+	}
+
+	public void setReferrallUuid(String referrallUuid) {
+		this.referrallUuid = referrallUuid;
+	}
+
+	public String getReferralUsername() {
+		return referralUsername;
+	}
+
+	public void setReferralUsername(String referralUsername) {
+		this.referralUsername = referralUsername;
+	}
+}

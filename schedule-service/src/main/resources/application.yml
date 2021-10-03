@@ -1,0 +1,91 @@
+server:
+  port: 8811
+spring:
+  application.name: schedule-service
+  sleuth:
+    feign:
+      enabled: false
+    integration:
+      enabled: false
+    rxjava:
+      schedulers:
+        hook:
+          enabled: false
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+    url: jdbc:mysql://${DATABASE_URL:54.254.246.56:3306}/${DB_NAME:f8}?useUnicode=true&characterEncoding=utf8&useLegacyDatetimeCode=false&serverTimezone=UTC
+    username: ${DB_USER:root}
+    password: ${DB_PWD:YXA6khvrxqKqt0ytw-WG_OF8RzOk2KY}
+    initialize: false
+    hikari:
+      maximum-pool-size: ${CONNECTION_POOL_SIZE:50}
+      minimum-idle: 2
+  jpa:
+    database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
+    database: MYSQL
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate.cache.use_query_cache: true
+      hibernate.cache.region.factory_class: org.hibernate.cache.ehcache.EhCacheRegionFactory
+
+feign:
+  hystrix:
+    enabled: false
+
+quartz.enabled: true
+jobs:
+  paymentQueryJob:
+    frequency: ${PAYMENT_QUERY_INTERVAL:12000000} #miliseconds
+    queryAfter: ${PAYMENT_QUERY_BEFORE:30} # This cronjob will get order that createdDate is after 'beforeTime' minutes.
+    hoursGracePeriod: ${ORDER_HOURS_GRACE_PERIOD:48} # number of hours order pending will be cancelled
+  sessionDailyViewJob:
+    cronExpression: ${SESSION_DAILY_VIEW_CRON_EXP:0 1 17 ? * *} # run at 0h01m each midnight in GMT+7
+  sessionStatsDailyViewJob:
+    cronExpression: ${SESSION_STATS_DAILY_VIEW_CRON_EXP:0 15 17 ? * *} # run at 0h01m each midnight in GMT+7
+  trainerAnnualRevenueJob:
+    cronExpression: ${TRAINER_ANNUAL_REVENUE_CRON_EXP:0 30 13 ? * *} # run at 0h10m each midnight in GMT+7
+  orderReconcileDailyViewJob:
+    cronExpression: ${ORDER_RECON_DAILY_VIEW_CRON_EXP:0 27 15 ? * *} # run at 1.AM each midnight in GMT+7
+  notifyBeforeSessionStartJob:
+    cronExpression: ${NOTIFY_BEFORE_SESSION_START_CRON_EXP:0 0/30 0 ? * * *} # run each 30 mins
+  sessionAddAvailabilityJob:
+    cronExpression: ${SESSION_ADD_AVAILABILITY_CRON_EXP:0 0 1 1 * ?} # run at 1AM start of month
+  sessionRemoveOldAvailabilityJob:
+    cronExpression: ${SESSION_DELETE_OLD_AVAILABILITY_CRON_EXP:0 0 2 1 * ?} # run at 2AM start of month
+  whosHotPTSelectAlgorithmRunJob:
+    cronExpression: ${WHOS_HOT_PT_AOGORITHEM_RUN_CRON_EXP:0 0/10 0 ? * * *} # run at 2AM start of month
+  resetAutoFollowJob:
+    cronExpression: ${RESET_AUTO_FOLLOW_CRON_EXP:0 0 16 ? * * 2030} # run at 23:00 every day in GMT+7, default prevent job run until 2030
+    timeZone: GMT
+    durationInHour: ${RESET_AUTO_FOLLOW_DURATION_IN_HOUR:7}
+  autoBurnConfirmSessionJob:
+    cronExpression: ${SESSION_AUTO_BURN_CONFIRM_CRON_EXP:0 1 17 ? * * } # run at 0h01m each midnight in GMT+7
+    timeZone: GMT
+  expiredPurchasedCreditPackagesCheckingJob:
+    cronExpression: ${EXPIRED_PURCHASED_CREDIT_PACKAGES_CRON_EXP:0 0 17 ? * * *} # run at 00:00:00am every day
+  autoBurnConfirmedCreditSessionJob:
+    cronExpression: ${CREDIT_SESSION_AUTO_BURN_CRON_EXP:0 0/5 * ? * * *} # At second :00, every 5 minutes starting at minute :00, of every hour
+  autoDeductBurnedCreditSessionJob:
+    cronExpression: ${CREDIT_SESSION_AUTO_DEDUCT_CRON_EXP:0 0 17 ? * * *} # run at 00:00:00am every day
+  autoBurnClassBookingsJob:
+    cronExpression: ${CREDIT_CLASS_BOOKING_AUTO_BURN_CRON_EXP:0 0/30 * ? * * *} # run At second :00, every 30 minutes starting at minute :00, of every hour
+  autoBurnEticketBookingsJob:
+    cronExpression: ${CREDIT_ETICKET_BOOKING_AUTO_BURN_CRON_EXP:0 0 17 ? * * *} # run at 00:00:00am every day
+  autoCancelSessionBookingJob:
+    cronExpression: ${AUTO_CANCEL_SESSION_BOOKING_CRON_EXP:0 0/30 * ? * * *} # run each 30 minutes
+  autoWithdrawalUserCreditByWeeklyJob:
+    cronExpression: ${AUTO_WITHDRAWAL_CREDITS_CRON_EXP:0 0 0 ? * MON *} # run at 00:00:00am every day
+  classBookingStartingReminderJob:
+    cronExpression: ${CLASS_BOOKING_STARTING_REMINDER_JOB:0 0/15 * ? * * *} # run each 15 minutes
+  autoWithdrawalClubCreditByWeeklyJob:
+    cronExpression: ${AUTO_WITHDRAWAL_CLUB_CREDITS_CRON_EXP:0 0 0 1,16 * ? *} # run at 00:00:00am at 1 and 16 every month
+  expiredUserCreditPackageNotification:
+    cronExpression: ${EXPIRED_USER_CREDIT_PACKAGE_NOTIFICATION_CRON_EXP:0 0 1 ? * * *} # run at 08:00:00am everyday
+service:
+  commerceUrl: ${COMMERCE_SERVICE_ENDPOINT:http://localhost:7777}
+  sessionUrl: ${SESSION_ENDPOINT:http://localhost:8082}
+  notificationUrl: ${NOTIFICATION_ENDPOINT:http://localhost:9977}
+management:
+  context-path: /schedule-management/actuator

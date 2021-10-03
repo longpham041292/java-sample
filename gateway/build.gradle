@@ -1,0 +1,159 @@
+buildscript {
+    ext {
+        springBootVersion = '1.4.1.RELEASE'
+        dependencyManagementVersion = '0.6.1.RELEASE'
+        common_lib = "1.5.9.19"
+    }
+    repositories {
+        mavenLocal()
+        maven {
+            url 'http://13.229.81.188:8081/repository/maven-public'
+        }
+        maven {
+            url 'http://13.229.81.188:8081/repository/maven-public'
+        }
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+        jcenter()
+        mavenCentral()
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+        classpath("io.spring.gradle:dependency-management-plugin:${dependencyManagementVersion}")
+        classpath("se.transmode.gradle:gradle-docker:1.2")
+        classpath "org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:2.2.1"
+    }
+}
+
+ext {
+    spockVersion = '1.1-groovy-2.4-rc-2'
+    groovyVersion = '2.4.7' // this version is compatible with spockVersion.
+    springCloudNeflixVersion = "1.2.0.RELEASE"
+    springBootDependencyVersion = "1.4.1.RELEASE"
+}
+
+repositories {
+    mavenLocal()
+    maven {
+        url 'http://13.229.81.188:8081/repository/maven-public'
+    }
+    maven {
+        url 'http://13.229.81.188:8081/repository/maven-public'
+    }
+    jcenter()
+    mavenCentral()
+}
+
+group = 'asia.cmg.f8'
+version = '1.0-SNAPSHOT'
+
+apply plugin: 'java'
+apply plugin: 'groovy'
+apply plugin: 'project-report'
+apply plugin: 'spring-boot'
+apply plugin: 'io.spring.dependency-management'
+apply plugin: 'checkstyle'
+apply plugin: 'pmd'
+apply plugin: 'jacoco'
+apply plugin: 'idea'
+apply plugin: "org.sonarqube"
+apply from: 'docker.gradle'
+
+jar {
+    baseName = 'gateway'
+    version = '1.0-SNAPSHOT'
+}
+
+dependencyManagement {
+    imports {
+        //mavenBom "org.springframework.cloud:spring-cloud-netflix:${springCloudNeflixVersion}"
+        mavenBom "org.springframework.cloud:spring-cloud-cluster:1.0.2.RELEASE"
+        mavenBom "org.springframework.boot:spring-boot-dependencies:${springBootDependencyVersion}"
+        mavenBom 'org.springframework.cloud:spring-cloud-dependencies:Camden.RELEASE'
+    }
+}
+
+sonarqube {
+    properties {
+        property "sonar.projectKey", "f8-gateway"
+        property "sonar.projectName", "f8-gateway"
+        property "sonar.projectVersion", "${project.version}"
+    }
+}
+
+checkstyle {
+    toolVersion = '7.1.1'
+    configFile = file('codequality/checkstyle/checkstyle.xml')
+}
+
+pmd {
+    ruleSetFiles = files(file('codequality/pmd/ruleset.xml'))
+}
+
+
+compileJava {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+    options.encoding = 'UTF-8'
+}
+
+compileJava.options*.compilerArgs = [
+        "-Xlint:serial", "-Xlint:varargs", "-Xlint:cast", "-Xlint:classfile",
+        "-Xlint:dep-ann", "-Xlint:divzero", "-Xlint:empty", "-Xlint:finally",
+        "-Xlint:overrides", "-Xlint:path", "-Xlint:static",
+        "-Xlint:try", "-Xlint:fallthrough", "-Xlint:rawtypes", "-Xlint:deprecation",
+        "-Xlint:unchecked", "-Xlint:-options"
+]
+
+compileTestJava.options*.compilerArgs = [
+        "-Xlint:serial", "-Xlint:-varargs", "-Xlint:cast", "-Xlint:classfile",
+        "-Xlint:dep-ann", "-Xlint:divzero", "-Xlint:empty", "-Xlint:finally",
+        "-Xlint:overrides", "-Xlint:path", "-Xlint:processing", "-Xlint:static",
+        "-Xlint:try", "-Xlint:-fallthrough", "-Xlint:-rawtypes", "-Xlint:-deprecation",
+        "-Xlint:-unchecked", "-Xlint:-options"]
+
+dependencies {
+
+    compile("org.springframework.cloud:spring-cloud-starter-zuul")
+    compile("org.springframework.cloud:spring-cloud-starter-feign") // declarative web service client
+    compile("org.springframework.cloud:spring-cloud-cluster-hazelcast")
+    compile("org.springframework.cloud:spring-cloud-starter-security")
+    compile("org.springframework.security:spring-security-jwt")
+
+
+	compile("com.netflix.feign:feign-jackson:8.14.4")
+    // -- required for Sleuth
+    compile("org.springframework.cloud:spring-cloud-starter-sleuth")
+    compile("org.springframework.cloud:spring-cloud-sleuth-zipkin-stream")
+    compile("org.springframework.cloud:spring-cloud-stream-binder-kafka")
+
+    compileOnly("org.springframework.boot:spring-boot-configuration-processor")
+    
+    compile("org.springframework.boot:spring-boot-starter-hateoas")
+    compile("asia.cmg.f8:common-lib:${common_lib}")
+    
+    compile group: 'com.google.code.gson', name: 'gson', version: '2.8.6'
+
+    testCompile("org.springframework.boot:spring-boot-starter-test")
+    testCompile("org.springframework.security:spring-security-test")
+
+    testCompile("org.assertj:assertj-core:3.5.2")
+    testCompile("org.spockframework:spock-core:$spockVersion") {
+        exclude group: 'org.codehaus.groovy'
+    }
+    testCompile("org.codehaus.groovy:groovy-all:$groovyVersion")
+    testCompile('org.hamcrest:hamcrest-core:1.3') // only necessary if Hamcrest matchers are used
+    testCompile('cglib:cglib-nodep:3.1') // used for spock framework to mock non-interface classes.
+    testCompile('org.objenesis:objenesis:2.1') // used when mocked class has non-default constructor
+}
+
+task wrapper(type: Wrapper) {
+    description = "Generates gradlew[.bat] scripts"
+    gradleVersion = '3.1'
+}
+
+// disable integration on CI server.
+test {
+    exclude '**/*ITest*'
+}

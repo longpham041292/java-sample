@@ -1,0 +1,13 @@
+{
+    "namespace": "asia.cmg.f8.session",
+    "type": "record",
+    "name": "CreatedSessionPackageEvent",
+    "fields": [
+        { "name": "eventId", "type": "string" },
+        { "name": "packageUuid", "type": "string" },
+        { "name": "userUuid", "type": "string" },
+        { "name": "ptUuid", "type": "string" },
+        { "name": "submittedAt", "type": "long" },
+        { "name": "createdDate", "type": "long" }
+    ]
+}

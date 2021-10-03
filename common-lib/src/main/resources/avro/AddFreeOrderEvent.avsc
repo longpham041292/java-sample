@@ -1,0 +1,13 @@
+{
+    "namespace": "asia.cmg.f8.commerce",
+    "type": "record",
+    "name": "AddFreeOrderEvent",
+    "fields": [
+        { "name": "eventId", "type": "string" },
+        { "name": "euUuid", "type": "string" },
+        { "name": "numberOfSession", "type": "int" },
+        { "name": "ptUuid", "type": "string" },
+        { "name": "expireDate", "type": "long" },
+        { "name": "ptServiceFree", "type": "double" }
+    ]
+}

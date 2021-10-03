@@ -1,0 +1,39 @@
+apply plugin: 'maven'
+
+def env = project.properties.env
+if (env == null) {
+    env = 'dev'
+}
+
+if (env == 'dev') {
+    uploadArchives {
+        repositories {
+            mavenDeployer {
+                repository(url: 'http://nexus.f8.pyco.vn:8081/repository/maven-releases') {
+                    authentication(userName: "admin", password: "admin123") // TODO move to gradle configuration later.
+                }
+
+                snapshotRepository(url: 'http://nexus.f8.pyco.vn:8081/repository/maven-snapshots') {
+                    authentication(userName: "admin", password: "admin123") // TODO move to gradle configuration later.
+                }
+                pom.artifactId = 'common-lib'
+            }
+        }
+    }
+} else if (env == 'staging') {
+    uploadArchives {
+        repositories {
+            mavenDeployer {
+                repository(url: 'http://13.229.81.188:8081/repository/maven-releases') {
+                    authentication(userName: "admin", password: "admin123") // TODO move to gradle configuration later.
+                }
+
+                snapshotRepository(url: 'http://13.229.81.188:8081/repository/maven-snapshots') {
+                    authentication(userName: "admin", password: "admin123") // TODO move to gradle configuration later.
+                }
+                pom.artifactId = 'common-lib'
+            }
+        }
+    }
+}
+

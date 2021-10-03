@@ -1,0 +1,14 @@
+{
+    "namespace": "asia.cmg.f8.common.event.session",
+    "type": "record",
+    "name": "SessionTransferredEvent",
+    "fields": [
+        { "name": "eventId", "type": "string" },
+        { "name": "submittedAt", "type": "long" },
+        { "name": "sessionUuid", "type": "string" },
+        { "name": "userId", "type": "string" },
+        { "name": "username", "type": "string" },
+        { "name": "oldPtUuid", "type": "string" },
+        { "name": "newPtUuid", "type": "string" }
+    ]
+}

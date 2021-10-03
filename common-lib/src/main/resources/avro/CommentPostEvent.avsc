@@ -1,0 +1,17 @@
+{
+    "namespace": "asia.cmg.f8.social",
+    "type": "record",
+    "name": "CommentPostEvent",
+    "fields": [
+        { "name": "eventId", "type": "string" },
+        { "name": "submittedAt", "type": "long" },
+        { "name": "postId", "type": "string"},
+        { "name": "postOwnerUuid", "type": ["null","string"], "default": null },
+        { "name": "countValue", "type": "int" },
+        { "name": "postType", "type": ["null","string"], "default": null },
+        { "name": "username", "type": ["null","string"], "default": null },
+        { "name": "name", "type": "string" },
+        { "name": "userUuid", "type": ["null","string"], "default": null },
+        { "name": "taggedUuids", "type": { "type": "array", "items":"string"}}
+    ]
+}

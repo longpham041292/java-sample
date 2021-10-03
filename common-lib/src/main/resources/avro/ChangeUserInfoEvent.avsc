@@ -1,0 +1,17 @@
+{
+    "namespace": "asia.cmg.f8.common.profile",
+    "type": "record",
+    "name": "ChangeUserInfoEvent",
+    "fields": [
+        { "name": "eventId", "type": "string" },
+        { "name": "submittedAt", "type": "long" },
+        { "name": "userId", "type": "string" },
+        { "name": "userType", "type": "string" },
+        { "name": "activate", "type": ["null","string"], "default": null },
+        { "name": "documentStatus", "type": ["null","string"], "default": null },
+        { "name": "level", "type": ["null","string"], "default": null },
+        { "name": "newUsername", "type": ["null","string"], "default": null },
+        { "name": "usercode", "type": ["null","string"], "default": null },
+        { "name": "clubcode", "type": ["null","string"], "default": null }
+    ]
+}

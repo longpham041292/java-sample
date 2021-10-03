@@ -1,0 +1,14 @@
+{
+    "namespace": "asia.cmg.f8.social",
+    "type": "record",
+    "name": "ViewPostEvent",
+    "fields": [
+        { "name": "eventId", "type": "string" },
+        { "name": "submittedAt", "type": "long" },
+        { "name": "postOwnerUuid", "type": ["null","string"], "default": null },
+        { "name": "postId", "type": "string" },
+        { "name": "postType", "type": ["null","string"], "default": null },
+        { "name": "viewerName", "type": ["null","string"], "default": null },
+        { "name": "viewerUuid", "type": ["null","string"], "default": null }
+    ]
+}

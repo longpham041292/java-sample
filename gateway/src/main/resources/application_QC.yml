@@ -1,0 +1,552 @@
+spring:
+  application.name: gateway
+  sleuth:
+    zuul:
+      enabled: false
+    feign:
+      enabled: false
+    integration:
+          enabled: false
+hystrix:
+  enabled: false
+  command:
+      default:
+        execution:
+          timeout:
+            enabled: false
+server:
+  port: 8888
+
+gateway:
+  defaultLanguage: ${DEFAULT_LANG:vi}
+  protocol: ${PROTOCOL:https}
+  accessActuatorRole: ${ACCESS_ACTUATOR_ROLE:admin}
+#endpoints.enabled: false
+#ribbon.eureka.enabled: false
+#logging.level.org: DEBUG
+zuul:
+  host:
+     connect-timeout-millis: ${READ_TIMEOUT:6000000}
+     socket-timeout-millis: ${CONNECT_TIMEOUT:6000000}
+     max-total-connections: ${MAX_TOTAL_CONNECTION:1000}
+     max-per-route-connections: ${MAX_TOTAL_PER_ROUTE:500}
+  sensitiveHeaders: Set-Cookie, Cookie
+  ignoredServices: '*'
+  routes:
+    facebookSignup:
+      path: /users/signup/facebook/**
+      url: ${USER_SERVICE_ENDPOINT:http://localhost:9998}/signup/facebook
+      stripPath: true
+    facebookSignin:
+      path: /users/signin/facebook/**
+      url: ${USER_SERVICE_ENDPOINT:http://localhost:9998}/signin/facebook
+      stripPath: true
+    users-api-signup:
+      path: /users/signup/**
+      url: ${USER_SERVICE_ENDPOINT:http://localhost:9998}/signup
+      stripPath: true
+    users-api-username-exist:
+      path: /users/exist/**
+      url: ${USER_SERVICE_ENDPOINT:http://localhost:9998}/exist
+      stripPath: true
+    users-api-email-exist:
+      path: /users/exist/email/**
+      url: ${USER_SERVICE_ENDPOINT:http://localhost:9998}/exist/email
+      stripPath: true  
+    users-api-usercode-valid:
+      path: /users/valid/usercode/**
+      url: ${USER_SERVICE_ENDPOINT:http://localhost:9998}/valid/usercode
+      stripPath: true  
+    users-api-resetpw:
+      path: /users/resetpw/**
+      url: ${USER_SERVICE_ENDPOINT:http://localhost:9998}/resetpw
+      stripPath: true
+    users-api-reactivate:
+      path: /users/reactivate/**
+      url: ${USER_SERVICE_ENDPOINT:http://localhost:9998}/reactivate
+      stripPath: true
+    users-api-checkactivated:
+      path: /users/activated/**
+      url: ${USER_SERVICE_ENDPOINT:http://localhost:9998}/activated
+      stripPath: true
+    users-api-ejabberd:
+      path: /ejabberd/**
+      url: ${USER_SERVICE_ENDPOINT:http://localhost:9998}/ejabberd
+      stripPath: true
+    users-api-document-approve:
+      path: /users/documents/approve/**
+      url: ${USER_SERVICE_ENDPOINT:http://localhost:9998}/documents/approve
+      stripPath: true
+    users-api-document-submit:
+      path: /users/documents/submit/**
+      url: ${USER_SERVICE_ENDPOINT:http://localhost:9998}/documents/submit
+      stripPath: true
+    users-api-conversations:
+      path: /users/conversations/**
+      url: ${USER_SERVICE_ENDPOINT:http://localhost:9998}/conversations
+      stripPath: true
+    users-api-notes:
+      path: /notes/**
+      url: ${USER_SERVICE_ENDPOINT:http://localhost:9998}/notes
+      stripPath: true
+    users-api-admin-activate-deactivate:
+      path: /admin/users/activate/**
+      url: ${USER_SERVICE_ENDPOINT:http://localhost:9998}/admin/activate
+      stripPath: true
+    users-api-change-password:
+      path: /users/changePassword/**
+      url: ${USER_SERVICE_ENDPOINT:http://localhost:9998}/changePassword
+    users-api-change-password-from-admin:
+      path: /admin/change-user-password/**
+      url: ${USER_SERVICE_ENDPOINT:http://localhost:9998}/admin/change-user-password/
+    users-api-change-username:
+      path: /users/changeUsername/**
+      url: ${USER_SERVICE_ENDPOINT:http://localhost:9998}/changeUsername
+    users-api-groups:
+      path: /admin/groups/**
+      url: ${USER_SERVICE_ENDPOINT:http://localhost:9998}/groups
+    admin-change-username-for-users:
+      path: /users/adminChangeUsernameForUser/**
+      url: ${USER_SERVICE_ENDPOINT:http://localhost:9998}/adminChangeUsernameForUser
+    admin-change-name-for-users:
+      path: /users/adminChangeNameForUser/**
+      url: ${USER_SERVICE_ENDPOINT:http://localhost:9998}/adminChangeNameForUser
+    emails-confirmation:
+      path: /register/*/confirm/**
+      url: ${USER_SERVICE_ENDPOINT:http://localhost:9998}/register/
+    admin-change-usercode-for-users:
+      path: /users/adminChangeUsercodeForUser/**
+      url: ${USER_SERVICE_ENDPOINT:http://localhost:9998}/adminChangeUsercodeForUser
+    emails-resetpassword:
+      path: /users/*/resetpassword/**
+      url: ${USERGRID_ENDPOINT:http://localhost:8080}/${ORG_NAME:cmg}/${APP_NAME:f8}/users
+    usergrid-answers:
+      path: /users/answers/**
+      url: ${PROFILE_SERVICE_ENDPOINT:http://localhost:8080}/${ORG_NAME:cmg}/${APP_NAME:f8}/answers
+    usergrid-questions:
+      path: /questions/**
+      url: ${PROFILE_SERVICE_ENDPOINT:http://localhost:8080}/${ORG_NAME:cmg}/${APP_NAME:f8}/questions
+    users-api-pt-users:
+      path: /admin/users/pt/**
+      url: ${USER_SERVICE_ENDPOINT:http://localhost:9998}/admin/users/pt
+      stripPath: true
+    users-api-users-avatar:
+      path: /admin/users/avatar/**
+      url: ${USER_SERVICE_ENDPOINT:http://localhost:9998}/admin/users/avatar
+    linkUser:
+      path: /users/linkUser/**
+      url: ${USER_SERVICE_ENDPOINT:http://localhost:9998}/linkUser
+      stripPath: true
+    users-actuator:
+      path: /user-management/actuator/**
+      url: ${USER_SERVICE_ENDPOINT:http://localhost:9998}/user-management/actuator/
+    usergrid-users:
+      path: /users/**
+      url: ${USERGRID_ENDPOINT:http://localhost:8080}/${ORG_NAME:cmg}/${APP_NAME:f8}/users
+    usergrid-groups:
+      path: /groups/**
+      url: ${USERGRID_ENDPOINT:http://localhost:8080}/${ORG_NAME:cmg}/${APP_NAME:f8}/groups
+    usergrid-lists:
+      path: /lists/**
+      url: ${USERGRID_ENDPOINT:http://localhost:8080}/${ORG_NAME:cmg}/${APP_NAME:f8}/lists
+      stripPath: true
+    usergrid-configs:
+          path: /configs/**
+          url: ${USER_SERVICE_ENDPOINT:http://localhost:9998}/configs
+          stripPath: true
+    social-pubClubs:
+          path: /pubClubs/**
+          url: ${SOCIAL_ENDPOINT:http://localhost:8083}/pubClubs
+          stripPath: true
+    profile-service-questions:
+      path: /questions/**
+      url: ${PROFILE_SERVICE_ENDPOINT:http://localhost:9988}/questions
+      stripPath: true
+    profile-service-admin-questions:
+      path: /admin/questions/**
+      url: ${PROFILE_SERVICE_ENDPOINT:http://localhost:9988}/admin/questions
+      stripPath: true
+    profile-service-answers:
+      path: /profiles/answers/**
+      url: ${PROFILE_SERVICE_ENDPOINT:http://localhost:9988}/answers  
+      stripPath: true 
+    profile-api-matchedtrainers:
+      path: /profiles/trainers/**
+      url: ${PROFILE_SERVICE_ENDPOINT:http://localhost:9988}/matchedtrainers
+      stripPath: true
+    profile-api-documents:
+      path: /documents/**
+      url: ${PROFILE_SERVICE_ENDPOINT:http://localhost:9988}/documents
+      stripPath: true
+    profile-api-attributes:
+      path: /profiles/attributes/**
+      url: ${PROFILE_SERVICE_ENDPOINT:http://localhost:9988}/attributes
+      stripPath: true
+    profile-api-all-attributes:
+        path: /profiles/attributes
+        url: ${PROFILE_SERVICE_ENDPOINT:http://localhost:9988}/attributes
+        stripPath: true
+    profile-api-tagline:
+      path: /profiles/tagline/**
+      url: ${PROFILE_SERVICE_ENDPOINT:http://localhost:9988}/tagline
+      stripPath: true
+    profile-api-bio:
+      path: /profiles/bio/**
+      url: ${PROFILE_SERVICE_ENDPOINT:http://localhost:9988}/bio
+      stripPath: true
+    profile-api-skills:
+      path: /profiles/skills/**
+      url: ${PROFILE_SERVICE_ENDPOINT:http://localhost:9988}/skills
+      stripPath: true
+    profile-api-languages:
+      path: /profiles/languages/**
+      url: ${PROFILE_SERVICE_ENDPOINT:http://localhost:9988}/languages
+      stripPath: true
+    profile-api-experience:
+      path: /profiles/experience/**
+      url: ${PROFILE_SERVICE_ENDPOINT:http://localhost:9988}/experience
+      stripPath: true
+    profile-api-rating-trainer:
+      path: /rating/trainer/**
+      url: ${PROFILE_SERVICE_ENDPOINT:http://localhost:9988}/rating/trainer
+      stripPath: true
+    profile-users-club:
+      path: /admin/users/club/**
+      url: ${PROFILE_SERVICE_ENDPOINT:http://localhost:9988}/users/club
+      stripPath: true
+    profile-users-club-whoshot:
+      path: /admin/club/**/whoshot/**
+      url: ${PROFILE_SERVICE_ENDPOINT:http://localhost:9988}/admin/club
+      stripPath: true               
+    profile-api-credentials:
+      path: /profiles/credentials/**
+      url: ${PROFILE_SERVICE_ENDPOINT:http://localhost:9988}/credentials
+      stripPath: true
+    profile-api-uploadmedia:
+      path: /profiles/uploadmedia/**
+      url: ${PROFILE_SERVICE_ENDPOINT:http://localhost:9988}/uploadmedia
+      stripPath: true
+    profile-api-updatePicture:
+      path: /profiles/uploadPicture/**
+      url: ${PROFILE_SERVICE_ENDPOINT:http://localhost:9988}/uploadPicture
+      stripPath: true
+    profile-api-finish:
+      path: /profiles/finish/**
+      url: ${PROFILE_SERVICE_ENDPOINT:http://localhost:9988}/finish
+      stripPath: true
+    profile-api-following:
+      path: /profiles/me/following/**
+      url: ${PROFILE_SERVICE_ENDPOINT:http://localhost:9988}/me/following
+      stripPath: true
+    profile-api-follower:
+      path: /profiles/**/follower/**
+      url: ${PROFILE_SERVICE_ENDPOINT:http://localhost:9988}/profile
+      stripPath: true
+    profile-actuator:
+      path: /profile-management/actuator/**
+      url: ${PROFILE_SERVICE_ENDPOINT:http://localhost:9988}/profile-management/actuator
+    profile-api-contracting:
+      path: /profiles/me/contracting/**
+      url: ${SESSION_ENDPOINT:http://localhost:8082}/contracting
+      stripPath: true
+    auto-follow-reset:
+      path: /updateautofollow-reset/**
+      url: ${SESSION_ENDPOINT:http://localhost:8082}/updateautofollow-reset
+      stripPath: true      
+    profile-api-pts-excluding-contracting:
+      path: /profiles/pts/excludecontracting/**
+      url: ${SESSION_ENDPOINT:http://localhost:8082}/pts/excludecontracting
+      stripPath: true
+    profile-api-client:
+      path: /profiles/me/client/**
+      url: ${SESSION_ENDPOINT:http://localhost:8082}/client
+      stripPath: true  
+    profile-api-search:
+      path: /profiles/search/**
+      url: ${PROFILE_SERVICE_ENDPOINT:http://localhost:9988}/search
+      stripPath: true
+    profile-api-search-trainer-same-level:
+      path: /profiles/search/trainers/**
+      url: ${PROFILE_SERVICE_ENDPOINT:http://localhost:9988}/search/trainers
+      stripPath: true
+    profile-api-association:
+      path: /profiles/association/**
+      url: ${PROFILE_SERVICE_ENDPOINT:http://localhost:9988}/association
+      stripPath: true
+    profile-api-full-profile:
+      path: /profiles/**
+      url: ${PROFILE_SERVICE_ENDPOINT:http://localhost:9988}/profile
+      stripPath: true
+    commerce-product-service:
+      path: /products/**
+      url: ${COMMERCE_ENDPOINT:http://localhost:7777}/products
+    commerce-subscriptions:
+      path: /admin/subscriptions/**
+      url: ${COMMERCE_ENDPOINT:http://localhost:7777}/admin/subscriptions
+    commerce-subscriptions-app:
+      path: /subscriptions/users/**
+      url: ${COMMERCE_ENDPOINT:http://localhost:7777}/subscriptions/users
+    commerce-order-service:
+      path: /orders/**
+      url: ${COMMERCE_ENDPOINT:http://localhost:7777}/orders
+      stripPath: true
+    commerce-payment-return-service:
+      path: /payment/return/**
+      url: ${COMMERCE_ENDPOINT:http://localhost:7777}/payment/return
+      stripPath: true
+    commerce-user-product-type:
+      path: /product-type/users/*
+      url: ${COMMERCE_ENDPOINT:http://localhost:7777}/product-type/users   
+    admin-get-order:
+      path: /admin/orders/**
+      url: ${COMMERCE_ENDPOINT:http://localhost:7777}/admin/orders
+      stripPath: true
+    commerce-actuator:
+      path: /commerce-management/actuator/**
+      url: ${COMMERCE_ENDPOINT:http://localhost:7777}/commerce-management/actuator/      
+    sessions-service:
+      path: /calendar/session/status/**
+      url: ${SESSION_ENDPOINT:http://localhost:8082}/session/status
+    sessions-availabilities:
+      path: /calendar/availabilities/**
+      url: ${SESSION_ENDPOINT:http://localhost:8082}/availabilities
+    sessions-update-status:
+      path: /calendar/sessions/*/status/**
+      url: ${SESSION_ENDPOINT:http://localhost:8082}/sessions/
+    sessions-admin-update-status:
+      path: /admin/calendar/sessions/*/status/**
+      url: ${SESSION_ENDPOINT:http://localhost:8082}/admin/sessions/
+    sessions-booking-session:
+      path: /calendar/sessions/users/**
+      url: ${SESSION_ENDPOINT:http://localhost:8082}/sessions/users/
+    sessions-admin-booking-session:
+      path: /admin/calendar/sessions/users/**
+      url: ${SESSION_ENDPOINT:http://localhost:8082}/admin/sessions/users/
+    sessions-admin-packages-trainer:
+      path: /admin/calendar/sessions/trainers/**
+      url: ${SESSION_ENDPOINT:http://localhost:8082}/admin/sessions/trainers/
+    sessions-contracting-trainer:
+      path: /calendar/sessions/users/me/contracting/trainers/**
+      url: ${SESSION_ENDPOINT:http://localhost:8082}/sessions/users/me/contracting/trainers/
+    sessions-history-trainer:
+      path: /calendar/sessions/users/*/contracting/trainers/**
+      url: ${SESSION_ENDPOINT:http://localhost:8082}/sessions/users/
+    sessions-schedule-popup:
+      path: /calendar/sessions/schedule/users/**
+      url: ${SESSION_ENDPOINT:http://localhost:8082}/sessions/schedule/users/
+    sessions-countdown:
+      path: /calendar/sessions/users/me/countdown/**
+      url: ${SESSION_ENDPOINT:http://localhost:8082}/sessions/users/me/countdown/
+    sessions-booking-confimred-list:
+      path: /calendar/sessions/confirmed/users/*/trainers/**
+      url: ${SESSION_ENDPOINT:http://localhost:8082}/sessions/confirmed/users/
+    sessions-availabilities-eu:
+      path: /calendar/users/me/availabilities/**
+      url: ${SESSION_ENDPOINT:http://localhost:8082}/users/me/availabilities/
+    sessions-schedule-event:
+      path: /calendar/schedule/events/**
+      url: ${SESSION_ENDPOINT:http://localhost:8082}/calendar/schedule/events/
+    sessions-schedule-users:
+        path: /calendar/schedule/users/**
+        url: ${SESSION_ENDPOINT:http://localhost:8082}/sessions/schedule/users/
+    sessions-admin-schedule-event:
+      path: /admin/calendar/trainers/**
+      url: ${SESSION_ENDPOINT:http://localhost:8082}/admin/calendar/trainers/    
+    sessions-admin-user:
+      path: /admin/users/**
+      url: ${SESSION_ENDPOINT:http://localhost:8082}/admin/users/
+    sessions-admin-user-active-total:
+      path: /admin/users/active/total/**
+      url: ${SESSION_ENDPOINT:http://localhost:8082}/admin/users/active/total
+    sessions-admin-trainer-active-total:
+      path: /admin/trainers/active/total/**
+      url: ${SESSION_ENDPOINT:http://localhost:8082}/admin/trainers/active/total
+    sessions-admin-user-contract:
+      path: /admin/users/*/contracting/trainers/**
+      url: ${SESSION_ENDPOINT:http://localhost:8082}/admin/users/*/contracting/trainers
+    sessions-admin-user-stats:
+      path: /admin/users/*/stats/**
+      url: ${SESSION_ENDPOINT:http://localhost:8082}/admin/users/
+    sessions-admin-trainer-session-activities:
+      path: /admin/trainers/*/activities/**
+      url: ${SESSION_ENDPOINT:http://localhost:8082}/admin/trainers/
+    sessions-admin-trainer-contracting-user:
+      path: /admin/trainers/*/contracting/users/**
+      url: ${SESSION_ENDPOINT:http://localhost:8082}/admin/trainers/
+    sessions-admin-trainer-scope-stats:
+      path: /admin/trainers/*/stats/**
+      url: ${SESSION_ENDPOINT:http://localhost:8082}/admin/trainers/
+    sessions-admin-trainer-purchase-history:
+      path: /admin/trainers/*/purchase/**
+      url: ${SESSION_ENDPOINT:http://localhost:8082}/admin/trainers/
+    sessions-admin-trainer-service-fee-history:
+      path: /admin/trainers/*/service-fee/**
+      url: ${SESSION_ENDPOINT:http://localhost:8082}/admin/trainers/
+    sessions-admin-trainer-new-customer:
+      path: /admin/trainers/*/stats/**
+      url: ${SESSION_ENDPOINT:http://localhost:8082}/admin/trainers/
+    sessions-admin-transfer:
+      path: /admin/sessions/transfer/**
+      url: ${SESSION_ENDPOINT:http://localhost:8082}/admin/sessions/transfer/
+    sessions-admin-active:
+      path: /admin/sessions/inactive/**
+      url: ${SESSION_ENDPOINT:http://localhost:8082}/admin/sessions/inactive
+    sessions-admin-inactive:
+      path: /admin/sessions/active/**
+      url: ${SESSION_ENDPOINT:http://localhost:8082}/admin/sessions/active
+    sessions-admin-message-save:
+      path: /admin/userMessage/save/**
+      url: ${SESSION_ENDPOINT:http://localhost:8082}/admin/userMessage/save
+    sessions-admin-message-view:
+      path: /admin/userMessage/view/**
+      url: ${SESSION_ENDPOINT:http://localhost:8082}/admin/userMessage/view
+    sessions-whoshot-view:
+      path: /whoshot/search/**
+      url: ${SESSION_ENDPOINT:http://localhost:8082}/whoshot/search
+    sessions-whoshot-edit:
+      path: /admin/whoshot/**
+      url: ${SESSION_ENDPOINT:http://localhost:8082}/admin/whoshot
+    sessions-import-missing-mysql:
+      path: /admin/users/import-missing-user-from-ug**
+      url: ${SESSION_ENDPOINT:http://localhost:8082}/admin/users/import-missing-user-from-ug
+    sessions-import-missing-ug:
+      path: /admin/users/import-missing-user-from-mysql**
+      url: ${SESSION_ENDPOINT:http://localhost:8082}/admin/users/import-missing-user-from-mysql
+    sessions-user-subscriptions:
+      path: /user-subscriptions/**
+      url: ${SESSION_ENDPOINT:http://localhost:8082}/user-subscriptions        
+    sessions-actuator:
+      path: /session-management/actuator/**
+      url: ${SESSION_ENDPOINT:http://localhost:8082}/session-management/actuator/    
+    social-service-clubs:
+      path: /clubs/**
+      url: ${SOCIAL_ENDPOINT:http://localhost:8083}/clubs
+    social-service-classes:
+      path: /classes/**
+      url: ${SOCIAL_ENDPOINT:http://localhost:8083}/classes/
+    social-service-ratings:
+      path: /ratings/session/**
+      url: ${SOCIAL_ENDPOINT:http://localhost:8083}/ratings/session
+    social-service-admin-reasons:
+      path: /admin/ratings/session/reasons/**
+      url: ${SOCIAL_ENDPOINT:http://localhost:8083}/admin/ratings/session/reasons
+    social-service-user:
+      path: /social/users/**
+      url: ${SOCIAL_ENDPOINT:http://localhost:8083}/social/users/
+      retryable: false
+    social-service-advertise:
+      path: /social/advertises/**
+      url: ${SOCIAL_ENDPOINT:http://localhost:8083}/social/advertises/
+    social-service-user-likes-post:
+      path: /social/likes/posts/**
+      url: ${SOCIAL_ENDPOINT:http://localhost:8083}/likes/posts/
+    social-service-user-reports-post:
+      path: /social/reports/posts/**
+      url: ${SOCIAL_ENDPOINT:http://localhost:8083}/reports/posts/
+    social-service-likes-comment:
+      path: /social/likes/comments/**
+      url: ${SOCIAL_ENDPOINT:http://localhost:8083}/likes/comments/
+    social-post-detail:
+      path: /posts/**
+      url: ${SOCIAL_ENDPOINT:http://localhost:8083}/posts/
+    social-service-post-detail:
+      path: /social/posts/**
+      url: ${SOCIAL_ENDPOINT:http://localhost:8083}/social/posts/
+    social-actuator:
+      path: /social-management/actuator/**
+      url: ${SOCIAL_ENDPOINT:http://localhost:8083}/social-management/actuator/   
+    aws-s3-upload-url:
+      path: /files/uploadUrl/**
+      url: ${FILE_UPLOAD_ENDPOINT:http://localhost:9980}/files/uploadUrl
+      stripPath: true
+    file-upload-actuator:
+      path: /file-upload-management/actuator/**
+      url: ${FILE_UPLOAD_ENDPOINT:http://localhost:9980}/file-upload-management/actuator/        
+    report-service-session:
+      path: /report/session/**
+      url: ${REPORT_SERVICE_ENDPOINT:http://localhost:7788}/session
+      stripPath: true
+    report-actuator:
+      path: /report-management/actuator/**
+      url: ${REPORT_SERVICE_ENDPOINT:http://localhost:7788}/report-management/actuator/         
+    notifications-jira-ticket:
+      path: /tickets/**
+      url: ${NOTIFICATION_ENDPOINT:http://localhost:9977}/tickets
+      stripPath: true
+    notifications-register-device:
+      path: /devices/**
+      url: ${NOTIFICATION_ENDPOINT:http://localhost:9977}/notifications/devices
+      stripPath: true
+    notifications-users:
+      path: /notifications/users/**
+      url: ${NOTIFICATION_ENDPOINT:http://localhost:9977}/notifications/users
+      stripPath: true
+    notifications-api:
+      path: /notifications/**
+      url: ${NOTIFICATION_ENDPOINT:http://localhost:9977}/notifications
+      stripPath: true
+    notifications-inbox-message:
+      path: /inbox/messages/**
+      url: ${NOTIFICATION_ENDPOINT:http://localhost:9977}/inbox/messages/
+    notifications-actuator:
+      path: /notification-management/actuator/**
+      url: ${NOTIFICATION_ENDPOINT:http://localhost:9977}/notification-management/actuator 
+    session-service-admin-activity:
+      path: /admin/sessions/activity/**
+      url: ${SESSION_ENDPOINT:http://localhost:8082}/admin/sessions/activity
+      stripPath: true
+    session-service-admin-financial-report:
+      path: /admin/reports/sessions/financial/**
+      url: ${SESSION_ENDPOINT:http://localhost:8082}/admin/reports/sessions/financial
+      stripPath: true
+    session-service-trainer-dashboard:
+      path: /trainers/*/stats/**
+      url: ${SESSION_ENDPOINT:http://localhost:8082}/trainers
+      stripPath: true
+    sessions-admin-list-trainers-statistic:
+      path: /admin/trainers/stats/**
+      url: ${SESSION_ENDPOINT:http://localhost:8082}/admin/trainers/stats/
+    sessions-admin-trainers:
+      path: /admin/trainers/**
+      url: ${SESSION_ENDPOINT:http://localhost:8082}/admin/trainers/
+    users-api-users-missing:
+      path: /admin/users/missing/**
+      url: ${SESSION_ENDPOINT:http://localhost:8082}/admin/users/missing
+      stripPath: true
+    apple-site-association:
+      path: /apple-app-site-association/**
+      url: ${SOCIAL_ENDPOINT:http://localhost:8083}/apple-app-site-association/
+      stripPath: true
+    profile-api-updateautofollow:
+      path: /profiles/updateautofollow/**
+      url: ${PROFILE_SERVICE_ENDPOINT:http://localhost:9988}/updateautofollow
+      stripPath: true
+    schedule-actuator:
+      path: /schedule-management/actuator/**
+      url: ${SCHEDULE_ENDPOINT:http://localhost:8811}/schedule-management/actuator/
+    auto-follow-actuator:
+      path: /auto-follow-management/actuator/**
+      url: ${AUTO_FOLLOW_ENDPOINT:http://localhost:9898}/auto-follow-management/actuator/
+# UserGrid Configuration
+
+usergrid:
+  baseUrl: ${USERGRID_ENDPOINT:http://usergrid.leep.center}/${ORG_NAME:cmg}/${APP_NAME:f8}
+  clientId: ${USERGRID_CLIENTID:YXA6lbnfWtKQEei_9gpYCoAAaw}
+  clientSecret: ${USERGRID_CLIENTSECRET:YXA6khvrxqKqt0ytw-WG_OF8RzOk2KY}
+  accessTokenTtl: ${USER_TOKEN_TIMEOUT:86400000} # in milliseconds
+
+jwt:
+  keyPass: 123456
+  expiresIn: 36000
+  alias: f8
+
+feign:
+  hystrix:
+    enabled: false
+
+
+spring.cloud.stream.kafka.binder:
+  zkNodes: ${ZOOKEEPER_ENDPOINT:54.254.246.56:2181}
+  brokers: ${KAFKABROKER_ENDPOINT:54.254.246.56:9092}
+management:
+  context-path: /gateway-management/actuator

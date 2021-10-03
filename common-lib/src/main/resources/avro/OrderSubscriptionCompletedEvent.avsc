@@ -1,0 +1,15 @@
+{
+    "namespace": "asia.cmg.f8.common.event",
+    "type": "record",
+    "name": "OrderSubscriptionCompletedEvent",
+    "fields": [
+        { "name": "orderUuid", "type": "string" },
+        { "name": "startTime", "type": "long" },
+        { "name": "endTime", "type": "long" },
+        { "name": "numberOfMonth", "type": "int" },
+        { "name": "euUuid", "type": "string" },
+        { "name": "ptUuid", "type": "string" },
+        { "name": "subscriptionId", "type": "long" },
+        { "name": "limitDay", "type": "int"}
+    ]
+}

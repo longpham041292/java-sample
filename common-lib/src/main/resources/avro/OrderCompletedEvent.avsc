@@ -1,0 +1,27 @@
+{
+    "namespace": "asia.cmg.f8.commerce",
+    "type": "record",
+    "name": "OrderCompletedEvent",
+    "fields": [
+        { "name": "eventId", "type": "string" },
+        { "name": "orderId", "type": "string" },
+        { "name": "orderCode", "type": "string" },
+        { "name": "createdDate", "type": "long" },
+        { "name": "numberOfSession", "type": "int" },
+        { "name": "expireLimit", "type": "int" },
+        { "name": "packagePrice", "type": "double" },
+        { "name": "originalPrice", "type": "double" },
+        { "name": "discount", "type": "double" },
+        { "name": "commission", "type": "double" },
+        { "name": "currency", "type": "string" },
+        { "name": "userUuid", "type": "string" },
+        { "name": "ptUuid", "type": "string" },
+        { "name": "productUuid", "type": "string" },
+        { "name": "productName", "type": "string" },
+        { "name": "submittedAt", "type": "long" },
+        { "name": "freeOrder", "type": "boolean"},
+        { "name": "contractNumber", "type": "string" },
+        { "name": "clubcode", "type": ["null","string"], "default": null },
+        { "name": "trainingStyle", "type": "string" }
+    ]
+}

@@ -1,0 +1,15 @@
+{
+    "namespace": "asia.cmg.f8.common.event.session",
+    "type": "record",
+    "name": "SessionBookOnBeHalfApprovalEvent",
+    "fields": [
+        { "name": "eventId", "type": "string" },
+        { "name": "submittedAt", "type": "long" },
+        { "name": "sessionUuid", "type": "string" },
+        { "name": "userId", "type": "string" },
+        { "name": "username", "type": "string" },
+        { "name": "ptUuid", "type": "string" },
+        { "name": "bookedAt", "type": "long" },
+        { "name": "approved", "type": "boolean" }
+    ]
+}

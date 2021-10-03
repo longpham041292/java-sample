@@ -1,0 +1,93 @@
+server:
+  port: 9998
+feign:
+  url: ${USERGRID_ENDPOINT:http://usergrid.leep.svc:8080}/${ORG_NAME:cmg}/${APP_NAME:f8}
+  connectTimeoutMillis: ${FEIGN_CONNECT_TIMEOUT:60000}
+  readTimeoutMillis: ${FEIGN_READ_TIMEOUT:60000}
+hystrix:
+  threadpool:
+      default:
+        # Maximum number of concurrent requests when using thread pools (Default: 10)
+        coreSize: ${HYSTRIX_THREAD_POOL_SIZE:500}
+        # Maximum LinkedBlockingQueue size - -1 for using SynchronousQueue (Default: -1)
+        maxQueueSize: -1
+  command:
+        default:
+          execution:
+            timeout:
+              enabled: false
+            isolation:
+              #          strategy: SEMAPHORE, no thread pool but timeout handling stops to work
+              strategy: THREAD
+              thread:
+                timeoutInMilliseconds: ${THREAD_TIME_OUT:600000}
+          fallback:
+            isolation:
+              semaphore:
+                maxConcurrentRequests: ${HYSTRIX_THREAD_POOL_SIZE:200}
+
+userapi:
+  userGridClientId: ${USERGRID_CLIENTID:YXA6lbnfWtKQEei_9gpYCoAAaw}
+  userGridClientSecret: ${USERGRID_CLIENTSECRET:YXA6khvrxqKqt0ytw-WG_OF8RzOk2KY}
+  admin:
+    userLoad: 20
+    maxLoad: 50
+  activeSuccessText: successfully activated
+  passActivated: ${PASS_ACTIVATED:true}
+  dateTimeFormat: ${DATE_TIME_FORMAT:dd/MM/yyyy hh:mm a}
+  defaultProfilePicture: ${DEFAULT_PROFILE_PICTURE:https://qc-web-f8.pycogroup.com/assets/images/profile.png}
+  allowUpdatePictureServiceRunning: ${ALLOW_UPDATE_PROFILE_PICTURE_SERVICE_RUNNING:true}
+  activatedUserUrl: ${USERGRID_ENDPOINT:http://localhost:8080}/${ORG_NAME:cmg}/${APP_NAME:f8}
+  defaultGroupId: ${DEFAULT_GROUP_ID:ef8fd92b-448d-11e9-a532-0a580a8200be}
+  euGroupId: ${EU_GROUP_ID:b3acbf6e-4acb-11e9-a532-0a580a8200be}
+  ptGroupId: ${PT_GROUP_ID:bc6961b3-4acb-11e9-a532-0a580a8200be}
+spring.cloud.stream.kafka.binder:
+  zkNodes: ${ZOOKEEPER_ENDPOINT:54.254.246.56:2181}
+  brokers: ${KAFKABROKER_ENDPOINT:54.254.246.56:9092}
+    
+spring:
+  application.name: user-api
+  sleuth:
+    feign:
+      enabled: false
+    integration:
+      enabled: false
+    rxjava:
+      schedulers:
+        hook:
+          enabled: false
+  cloud:
+    stream:
+      bindings:
+        submitDocumentOut:
+          destination: SubmitDocumentTopic
+          contentType: avro/bytes
+        changeUserOut:
+          destination: userInfoTopic
+          contentType: avro/bytes
+        signUpUserOut:
+          destination: signUpTopic
+          contentType: avro/bytes
+        signUpUserIn:
+          destination: signUpTopic
+          contentType: avro/bytes
+          group: signUpGroup
+        userActivatedOut:
+          destination: UserActivatedTopic
+          contentType: avro/bytes
+        userActivateOrDeactivateOut:
+          destination: userActivateOrDeactivateTopic
+          contentType: avro/bytes
+          group: userActivateOrDeactivateGroup
+        adminApprovedDocumentOutput:
+          destination: adminApprovedDocumentTopic
+          contentType: avro/bytes
+          group: userAdminApprovedDocumentGroup
+  hateoas:
+    useHalAsDefaultJsonMediaType: false
+
+service:
+  sessionUrl: ${SESSION_ENDPOINT:http://localhost:8082}
+management:
+  context-path: /user-management/actuator  
+#logging.level.asia.cmg.f8.user.client.UserClient: DEBUG

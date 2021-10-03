@@ -1,0 +1,15 @@
+{
+  "namespace": "asia.cmg.f8.commerce",
+  "type": "record",
+  "name": "WalletEvent",
+  "fields": [
+    { "name": "eventId", "type": "string" },
+    { "name": "packageName", "type": ["null","string"], "default": null },
+    { "name": "oldPackageName", "type": ["null","string"], "default": null },
+    { "name": "expiredAt", "type": ["null","long"], "default": null },
+    { "name": "userId", "type": ["null","long"], "default": null },
+    { "name": "userUuid", "type": "string" },
+    { "name": "expiredAmount", "type": ["null","long"], "default": null },
+    { "name": "notiType", "type": "string" }
+  ]
+}

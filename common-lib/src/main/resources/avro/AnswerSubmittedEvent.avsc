@@ -1,0 +1,25 @@
+{
+    "namespace": "asia.cmg.f8.profile",
+    "type": "record",
+    "name": "AnswerSubmittedEvent",
+    "fields": [
+        { "name": "eventId", "type": "string" },
+        { "name": "userId", "type": "string" },
+        { "name": "userType", "type": "string" },
+        { "name": "questionId", "type": "string" },
+        { "name": "optionKeys", 
+        	"type": { "type": "array", 
+        		"items": {
+        			"type": "record",
+        			"name": "OptionRecord",
+        			"fields": [
+        				{"name": "option", "type": "string"},
+        				{"name": "choose", "type": "boolean"}
+        			]	
+        		} 
+        	} 
+        },
+        { "name": "answerId", "type": ["null","string"], "default": null },
+        { "name": "submittedAt", "type": "long" }
+    ]
+}

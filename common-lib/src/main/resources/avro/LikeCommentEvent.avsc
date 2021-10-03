@@ -1,0 +1,17 @@
+{
+    "namespace": "asia.cmg.f8.social",
+    "type": "record",
+    "name": "LikeCommentEvent",
+    "fields": [
+        { "name": "eventId", "type": "string" },
+        { "name": "comment_id", "type": "string" },
+        { "name": "commentOwnerUuid", "type": ["null","string"], "default": null },
+        { "name": "postUuid", "type": ["null","string"], "default": null },
+        { "name": "postOwnerName", "type": ["null","string"], "default": null },
+        { "name": "countValue", "type": "int" },
+        { "name": "submittedAt", "type": "long" },
+        { "name": "userUuid", "type": ["null","string"], "default": null },
+        { "name": "username", "type": ["null","string"], "default": null },
+        { "name": "postOwnerUuid", "type": ["null","string"], "default": null }
+    ]
+}

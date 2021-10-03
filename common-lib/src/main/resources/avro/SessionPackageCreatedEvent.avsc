@@ -1,0 +1,14 @@
+{
+    "namespace": "asia.cmg.f8.common.event.session",
+    "type": "record",
+    "name": "SessionPackageCreatedEvent",
+    "fields": [
+        { "name": "eventId", "type": "string" },
+        { "name": "submittedAt", "type": "long" },
+        { "name": "userId", "type": "string" },
+        { "name": "username", "type": "string" },
+        { "name": "ptUuid", "type": "string" },
+        { "name": "packageUuid", "type": "string" },
+        { "name": "orderUuid", "type": "string" }
+    ]
+}

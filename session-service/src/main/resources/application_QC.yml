@@ -1,0 +1,150 @@
+server.port: 8082
+
+feign:
+  url: ${USERGRID_ENDPOINT:http://usergrid.leep.center}/${ORG_NAME:cmg}/${APP_NAME:f8}
+  commerceUrl: ${COMMERCE_ENDPOINT:http://localhost:7777}
+  connectTimeoutMillis: ${FEIGN_CONNECT_TIMEOUT:60000}
+  readTimeoutMillis: ${FEIGN_READ_TIMEOUT:60000}
+  socialUrl: ${SOCIAL_ENDPOINT:http://localhost:8083}
+hystrix:
+  threadpool:
+      default:
+        # Maximum number of concurrent requests when using thread pools (Default: 10)
+        coreSize: ${HYSTRIX_THREAD_POOL_SIZE:500}
+        # Maximum LinkedBlockingQueue size - -1 for using SynchronousQueue (Default: -1)
+        maxQueueSize: -1
+  command:
+        default:
+          execution:
+            timeout:
+              enabled: false
+            isolation:
+              #          strategy: SEMAPHORE, no thread pool but timeout handling stops to work
+              strategy: THREAD
+              thread:
+                timeoutInMilliseconds: ${THREAD_TIME_OUT:600000}
+          fallback:
+            isolation:
+              semaphore:
+                maxConcurrentRequests: ${HYSTRIX_THREAD_POOL_SIZE:200}
+session:
+  database:
+    initDb: ${DB_INITIALIZE:false}
+    initDbSource: ${DB_INITILIZE_SOURCE:data.sql}
+  defCountry: ${COUNTRY_CODE:vn}
+  defLang: ${LANGUAGE_CODE:vi}
+  defCurrency: ${CURRENCY:VND}
+  dateTimeFormat: ${DATE_TIME_FORMAT:dd/MM/yyyy HH:mm:ss}
+  newPTMonthsAhead: ${NEW_PT_MONTHS_AHEAD:3}
+  numOfThreadResetConnection: ${NUM_OF_THREAD_RESET_CONNECTION:2}
+  currentPTMonthsAhead: ${CURRENT_PT_MONTHS_AHEAD:3} #set to 3 months for the first time. Then 1 month after all.
+  removeAvailabilityMonthsPast: ${REMOVE_AVAILABILITY_MONTHS_PAST:2}
+  popupSchedulePeriod: ${POPUP_SCHEDULE_PERIOD:7} # set to 7 days for popup show
+  f8UserUuids: ${F8_USER_UUID:750d6e9d-41e5-11e7-86ca-02420a010302,3e271bf3-5185-11e7-b6ad-02420a010302,7e0ab24f-441d-11e7-b6ad-02420a010302,7cb677f9-441e-11e7-b6ad-02420a010302,61d2c560-50c2-11e7-b6ad-02420a010302,ff34ad87-8352-11e9-93b3-aede93c99402,6885acf4-8118-11e9-8a14-da3c4bf7a8df}
+  defaultGroupId: ${DEFAULT_GROUP_ID:ef8fd92b-448d-11e9-a532-0a580a8200be}
+  euGroupId: ${EU_GROUP_ID:b3acbf6e-4acb-11e9-a532-0a580a8200be}
+  ptGroupId: ${PT_GROUP_ID:bc6961b3-4acb-11e9-a532-0a580a8200be}
+  localTimeZoneId: ${LOCAL_TIME_ZONE_ID:+07:00}
+  validator:
+    maxAllowedTimeInHours: 24
+  export:
+    members: members.csv
+
+crm:
+ wcfUrl: ${CRM_WCF_URL:https://crm-dev.cmg.asia:8010/CMGWCFServiceApp.svc}
+ defaultClubCode: ${CRM_DEFAULT_CLUB_CODE:WFC}
+ defaultPtCode: ${CRM_DEFAULT_PT_CODE:TRAINER_LEEP}
+userGrid:
+  userGridClientId: ${USERGRID_CLIENTID:YXA6lbnfWtKQEei_9gpYCoAAaw}
+  userGridClientSecret: ${USERGRID_CLIENTSECRET:YXA6khvrxqKqt0ytw-WG_OF8RzOk2KY}
+  maxCheckedInUser: ${MAX_CHECKED_IN_USER:1000}
+  maxSearchResult: ${MAX_SEARCH_RESULT:1000}
+
+spring.cloud.stream.kafka.binder:
+  zkNodes: ${ZOOKEEPER_ENDPOINT:54.254.246.56:2181}
+  brokers: ${KAFKABROKER_ENDPOINT:54.254.246.56:9092}
+
+spring:
+  application.name: session-service
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+    url: jdbc:mysql://${DATABASE_URL:54.254.246.56:3306}/${DB_NAME:f8}?useUnicode=true&characterEncoding=utf8&useLegacyDatetimeCode=false&serverTimezone=UTC
+    username: ${DB_USER:root}
+    password: ${DB_PWD:YXA6khvrxqKqt0ytw-WG_OF8RzOk2KY}
+    initialize: false
+    hikari:
+      maximum-pool-size: ${CONNECTION_POOL_SIZE:10}
+      minimum-idle: 2
+  jpa:
+    database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
+    database: MYSQL
+    show-sql: ${HIBERNATE_SHOW_SQL:true}
+    hibernate:
+      ddl-auto: ${HIBERNATE_DDL_AUTO:update}
+    properties:
+      hibernate.cache.use_query_cache: true
+      hibernate.cache.region.factory_class: org.hibernate.cache.ehcache.EhCacheRegionFactory
+      hibernate.jdbc.batch_size: ${HIBERNATE_BATCH_SIZE:100}
+  sleuth:
+    feign:
+      enabled: false
+    integration:
+      enabled: false
+    rxjava:
+      schedulers:
+        hook:
+          enabled: false
+  spring.messages:
+    basename: i18n/messages
+  cloud:
+    stream:
+      bindings:
+        orderCompletedInput:
+          destination: orderCompletedTopic
+          contentType: avro/bytes
+          group: orderPackageCreationGroup
+        orderSubscriptionCompletedInput:
+          destination: orderSubscriptionCompletedTopic
+          contentType: avro/bytes
+        setupPtUserChannel:
+          destination: orderCompletedTopic
+          contentType: avro/bytes
+          group: setupPtUserGroup
+        setupUserChannel:
+          destination: orderCompletedTopic
+          contentType: avro/bytes
+          group: setupUserGroup
+        changeSessionStatusOutput:
+          destination: sessionStatusTopic
+          contentType: avro/bytes
+        changeSessionStatusInput:
+          destination: sessionStatusTopic
+          contentType: avro/bytes
+          group: changeSessionStatusGroup
+        newOrderOutput:
+          destination: newOrderTopic
+          contentType: avro/bytes
+        newOrderInput:
+          destination: newOrderTopic
+          contentType: avro/bytes
+          group: newOrderGroup
+        userActivatedInput:
+          destination: UserActivatedTopic
+          contentType: avro/bytes
+          group: SessionUserActivatedGroup
+        transferSessionsOutput:
+          destination: transferSessionsTopic
+          contentType: avro/bytes
+        sessionBookingCompletedOutput:
+          destination: sessionBookingCompletedTopic
+          contentType: avro/bytes
+        createdPackageEventOutput:
+          destination: createdPackageTopic
+          contentType: avro/bytes
+        changeUserInfoIn:
+          destination: userInfoTopic
+          contentType: avro/bytes  
+          group: sessionChangeUserInfoGroup     
+management:
+  context-path: /session-management/actuator      
+logging.level.asia.cmg.f8.session.client.UserClient: DEBUG

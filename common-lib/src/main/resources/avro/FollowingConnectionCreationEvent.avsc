@@ -1,0 +1,11 @@
+{
+    "namespace": "asia.cmg.f8.common.profile",
+    "type": "record",
+    "name": "FollowingConnectionCreationEvent",
+    "fields": [
+        { "name": "eventId", "type": "string" },
+        { "name": "submittedAt", "type": "long" },
+        { "name": "followingId", "type": "string" },
+        { "name": "followerId", "type": "string" }
+    ]
+}

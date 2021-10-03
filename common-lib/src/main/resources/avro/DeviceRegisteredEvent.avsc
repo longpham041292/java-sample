@@ -1,0 +1,11 @@
+{
+    "namespace": "asia.cmg.f8.common.event.notification",
+    "type": "record",
+    "name": "DeviceRegisteredEvent",
+    "fields": [
+        { "name": "eventId", "type": "string" },
+        { "name": "submittedAt", "type": "long" },
+        { "name": "deviceId", "type": "string" },
+        { "name": "userId", "type": "string" }
+    ]
+}

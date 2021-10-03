@@ -1,0 +1,11 @@
+{
+    "namespace": "asia.cmg.f8.common.profile",
+    "type": "record",
+    "name": "CompleteProfileEvent",
+    "fields": [
+        { "name": "eventId", "type": "string" },
+        { "name": "submittedAt", "type": "long" },
+        { "name": "userId", "type": "string" },
+        { "name": "userType", "type": "string" }
+    ]
+}

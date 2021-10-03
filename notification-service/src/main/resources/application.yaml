@@ -1,0 +1,222 @@
+server.port: 9977
+#endpoints.enabled: false
+
+feign:
+  url: ${USERGRID_ENDPOINT:http://localhost:8080}/${ORG_NAME:cmg}/${APP_NAME:f8}
+  commerce: ${COMMERCE_ENDPOINT:http://localhost:7777}
+  session: ${SESSION_ENDPOINT:http://localhost:8082}
+  profile: ${PROFILE_ENDPOINT:http://localhost:9988}
+  jiraServiceDesk: ${JIRA_SERVICEDESK:https://ssl.cmg.asia/jira/rest}
+  hystrix:
+    enabled: true
+hystrix:
+  threadpool:
+      default:
+        # Maximum number of concurrent requests when using thread pools (Default: 10)
+        coreSize: ${HYSTRIX_THREAD_POOL_SIZE:500}
+        # Maximum LinkedBlockingQueue size - -1 for using SynchronousQueue (Default: -1)
+        maxQueueSize: -1
+  command:
+        default:
+          execution:
+            timeout:
+              enabled: false
+            isolation:
+              #          strategy: SEMAPHORE, no thread pool but timeout handling stops to work
+              strategy: THREAD
+              thread:
+                timeoutInMilliseconds: ${THREAD_TIME_OUT:600000}
+          fallback:
+            isolation:
+              semaphore:
+                maxConcurrentRequests: ${HYSTRIX_THREAD_POOL_SIZE:200}
+counter:
+  url: ${COUNTER_ENDPOINT:http://localhost:9981}
+
+usergrid:
+  clientId: ${USERGRID_CLIENTID:b3U6kvjp4dKQEei_9gpYCoAAaw}
+  clientSecret: ${USERGRID_CLIENTSECRET:b3U6rZ3cYqUmVJjZdpBAdouOZ2eAxo0}
+spring.cloud.stream.kafka.binder:
+  zkNodes: ${ZOOKEEPER_ENDPOINT:54.254.246.56:2181}
+  brokers: ${KAFKABROKER_ENDPOINT:54.254.246.56:9092}
+
+spring:
+  application.name: notification-service
+  
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+    url: jdbc:mysql://${DATABASE_URL:54.254.246.56:3306}/${DB_NAME:f8}?useUnicode=true&characterEncoding=utf8&useLegacyDatetimeCode=false&serverTimezone=UTC
+    username: ${DB_USER:root}
+    password: ${DB_PWD:YXA6khvrxqKqt0ytw-WG_OF8RzOk2KY}
+    initialize: false
+    hikari:
+      maximum-pool-size: ${CONNECTION_POOL_SIZE:10}
+      minimum-idle: 2
+  jpa:
+    database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
+    database: MYSQL
+    show-sql: ${HIBERNATE_SHOW_SQL:true}
+    hibernate:
+      ddl-auto: ${HIBERNATE_DDL_AUTO:update}
+    properties:
+      hibernate.cache.use_query_cache: true
+      hibernate.cache.region.factory_class: org.hibernate.cache.ehcache.EhCacheRegionFactory
+  
+  sleuth:
+    feign:
+      enabled: false
+    integration:
+      enabled: false
+    rxjava:
+      schedulers:
+        hook:
+          enabled: false
+  cloud:
+    stream:
+      bindings:
+        completeProfileIn:
+          destination: CompleteProfileTopic
+          contentType: avro/bytes
+          group: notifyCompleteProfile
+        submitDocumentIn:
+          destination: SubmitDocumentTopic
+          contentType: avro/bytes
+          group: notifySubmitDocument
+        orderCompletedInput:
+          destination: orderCompletedTopic
+          contentType: avro/bytes
+          group: notifyOrderCompleted
+        deviceRegisteredInput:
+          destination: DeviceRegisteredTopic
+          contentType: avro/bytes
+          group: deviceRegisteredInputGroup
+        deviceRegisteredOutput:
+          destination: DeviceRegisteredTopic
+          contentType: avro/bytes
+        orderCompletedInboxMessageInput:
+          destination: orderCompletedTopic
+          contentType: avro/bytes
+        createdPackageEventInput:
+          destination: createdPackageTopic
+          contentType: avro/bytes
+          group: notifyCreatedPackageGroup
+        changeSessionStatusInput:
+          destination: sessionStatusTopic
+          contentType: avro/bytes
+          group: notifyChangeSessionStatusGroup
+        transferSessionCompletedInput:
+          destination: transferSessionsTopic
+          contentType: avro/bytes
+          group: transferSessionCompletedGroup
+        pushTransferSessionNotificationInput:
+          destination: transferSessionsTopic
+          contentType: avro/bytes
+          group: pushTransferSessionNotificationGroup
+        userPostStatusInput:
+          destination: userCreatedPostTopic
+          contentType: avro/bytes
+          group: userCreatedPostGroup
+        likePostInput:
+          destination: likePostTopic
+          contentType: avro/bytes
+          group: userLikePostInputGroup
+        commentPostInput:
+          destination: commentPostTopic
+          contentType: avro/bytes
+          group: commentPostGroup
+        likeCommentInput:
+          destination: likeCommentTopic
+          contentType: avro/bytes
+          group: likeCommentGroup
+        adminApprovedDocumentInput:
+          destination: adminApprovedDocumentTopic
+          contentType: avro/bytes
+          group: sessionAdminApprovedDocumentGroup
+        emailAdminApprovedDocumentInput:
+          destination: adminApprovedDocumentTopic
+          contentType: avro/bytes
+          group: emailAdminApprovedDocumentGroup
+        userFollowingInput:
+          destination: followingTopic
+          contentType: avro/bytes
+          group: followingGroup
+        sessionBookingCompletedInput:
+          destination: sessionBookingCompletedTopic
+          contentType: avro/bytes
+          group: notifySessionBookingCompletedGroup
+        notifyChangeSessionStatusInput:
+          destination: notifyChangeSessionStatusTopic
+          contentType: avro/bytes
+          group: notifyChangeSessionStatusInputGroup
+        notifyChangeSessionStatusOutput:
+          destination: notifyChangeSessionStatusTopic
+          contentType: avro/bytes
+          group: notifyChangeSessionStatusOutputGroup
+        changeUserInfoInput:
+          destination: userInfoTopic
+          contentType: avro/bytes  
+          group: notifyChangeUserInfoGroup
+        orderSubscriptionCompletedInput:
+          destination: orderSubscriptionCompletedTopic
+          contentType: avro/bytes
+        orderCreditCompletedInput:
+          destination: orderCreditCompletedTopic
+          contentType: avro/bytes
+notification:
+  database:
+    initDb: ${DB_INITIALIZE:false}
+    initDbSource: ${DB_INITILIZE_SOURCE:data.sql}
+  defaultLang: vi
+  webPortal: ${WEB_PORTAL_URL:http://localhost:9090}
+  termCondUrl: ${WEB_PORTAL_URL:http://localhost:9090}/f8-connect/term-condition
+  mail:
+    from: ${FROM_EMAIL:LEEP Notification <mobile@pyramid-consulting.com>}
+  maxSearchResult: ${MAX_SEARCH_RESULT:500}
+  notifySessionStartPeriodInMins: 30 # before session start 30 mins
+  defaultGroupId: ${DEFAULT_GROUP_ID:ef8fd92b-448d-11e9-a532-0a580a8200be}
+  euGroupId: ${EU_GROUP_ID:b3acbf6e-4acb-11e9-a532-0a580a8200be}
+  ptGroupId: ${PT_GROUP_ID:bc6961b3-4acb-11e9-a532-0a580a8200be}
+  f8UserUuids: ${F8_USER_UUID:11182947-e0d2-11e8-9d35-0a580a8200e5}
+  oneSignal:
+    appId: ${APP_ID:c3660167-6b33-4982-bf5d-c0f022503771}
+    apiKey: ${API_KEY:ZmMwOGZmMWItNjY4YS00YmQ2LTgwNDgtNjA0ZTBjMmFhMGZh}
+    allSegment: ${OSN_ALL_SEGMENT:All}
+
+notifier:
+  iOsNotifier: f8_ios_notifier
+  androidNotifier: f8_android_notifier
+
+mailasset:
+  logoUrl: ${MAIL_LOGO_URL:https://qc-web-f8.pycogroup.com/assets/images/logo.png}
+  spacerUrl: ${MAIL_SPACER_URL:https://s3-ap-southeast-1.amazonaws.com/qcvideof8/static/spacer.gif}
+
+jiraServiceDesk:
+  userName: ${JIRA_USERNAME:f8.deploy}
+  password: ${JIRA_PASSWORD:c3H5XA87qKaAGYU}
+  serviceDeskId: ${JIRA_SERVICEDESK_ID:7}
+  anonymousUserRole: ${SERVICEDESK_ANONYMOUS_USER:-1}
+  ptRole: ${SERVICEDESK_PT_ROLE:11009}
+  euRole: ${SERVICEDESK_EU_ROLE:11008}
+
+spring.mail:
+  host: ${EMAIL_SERVER_HOST:smtp-relay.gmail.com}
+  port: ${EMAIL_SERVER_PORT:465}
+  username: ${SYSTEM_EMAIL:mobile@pyramid-consulting.com}
+  password: ${SYSTEM_EMAIL_PASSWORD:@Mobile132}
+  protocol: smtps
+  auth: true
+  
+spring.messages:
+  basename: i18n/messages
+
+spring.thymeleaf:
+  mode: XHTML
+
+logging.level.asia.cmg.f8.notification.client.ServiceDeskClient: DEBUG
+
+cache:
+ push:
+  maximumSize: ${CACHE_PUSH_SIZE:10000}
+  expireInSeconds: ${CACHE_EXPIRE_IN_SECONDS:86400}
+management:
+  context-path: /notification-management/actuator  

@@ -1,0 +1,156 @@
+server.port: 7777
+spring:
+  application.name: commerce-service
+  sleuth:
+    feign:
+      enabled: false
+    integration:
+      enabled: false
+    rxjava:
+      schedulers:
+        hook:
+          enabled: false
+
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+    url: jdbc:mysql://${DATABASE_URL:54.254.246.56:3306}/${DB_NAME:f8}?useUnicode=true&characterEncoding=utf8&useLegacyDatetimeCode=false&serverTimezone=UTC
+    username: ${DB_USER:root}
+    password: ${DB_PWD:YXA6khvrxqKqt0ytw-WG_OF8RzOk2KY}
+    initialize: false
+    hikari:
+      maximum-pool-size: ${CONNECTION_POOL_SIZE:10}
+      minimum-idle: 2
+  jpa:
+    database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
+    database: MYSQL
+    show-sql: ${HIBERNATE_SHOW_SQL:true}
+    hibernate:
+      ddl-auto: ${HIBERNATE_DDL_AUTO:update}
+    properties:
+      hibernate.cache.use_query_cache: true
+      hibernate.cache.region.factory_class: org.hibernate.cache.ehcache.EhCacheRegionFactory
+  cloud:
+    stream:
+      bindings:
+        orderCompletedOutput:
+          destination: orderCompletedTopic
+          contentType: avro/bytes
+        orderCompletedInput:
+          destination: orderCompletedTopic
+          contentType: avro/bytes
+          group: processPromotionUsageGroup
+        orderSubscriptionCompletedOutput:
+          destination: orderSubscriptionCompletedTopic
+          contentType: avro/bytes
+        orderCreditCompletedOutput:
+          destination: orderCreditCompletedTopic
+          contentType: avro/bytes
+        orderCreditCompletedInput:
+          destination: orderCreditCompletedTopic
+          contentType: avro/bytes
+          group: processPromotionUsageGroup
+feign:
+  url: ${USERGRID_ENDPOINT:http://usergrid.leep.center}/${ORG_NAME:cmg}/${APP_NAME:f8}
+  socialUrl: ${SOCIAL_ENDPOINT:http://localhost:8083}
+  connectTimeoutMillis: ${FEIGN_CONNECT_TIMEOUT:6000000}
+  readTimeoutMillis: ${FEIGN_READ_TIMEOUT:6000000}
+  hystrix:
+    threadpool:
+        default:
+          # Maximum number of concurrent requests when using thread pools (Default: 10)
+          coreSize: ${HYSTRIX_THREAD_POOL_SIZE:500}
+          # Maximum LinkedBlockingQueue size - -1 for using SynchronousQueue (Default: -1)
+          maxQueueSize: -1
+    command:
+          default:
+            execution:
+              timeout:
+                enabled: false
+              isolation:
+                #          strategy: SEMAPHORE, no thread pool but timeout handling stops to work
+                strategy: THREAD
+                thread:
+                  timeoutInMilliseconds: ${THREAD_TIME_OUT:600000}
+            fallback:
+              isolation:
+                semaphore:
+                  maxConcurrentRequests: ${HYSTRIX_THREAD_POOL_SIZE:200}
+    
+
+commerce:
+  database:
+    initDb: ${DB_INITIALIZE:false}
+    initDbSource: ${DB_INITILIZE_SOURCE:data.sql}
+  defCountry: ${COUNTRY_CODE:vn}
+  defLang: ${LANGUAGE_CODE:vi}
+  defCurrency: ${CURRENCY:VND}
+  dateTimeFormat: ${DATE_TIME_FORMAT:dd/MM/yyyy HH:mm:ss}
+  hoursGracePeriod: ${ORDER_HOURS_GRACE_PERIOD:48} # number of hours order pending will be cancelled
+  secretKey: ${SECRET_KEY:XlF-u1nnLL4fd971dQy2Rq-Ri1SO7pKK}
+  leepAccountUuid: ${LEEP_ACCOUNT_UUID:58bf34d1-2ba7-11ea-a0d3-0a580a820367}
+  vat: ${VAT_VALUE:11}
+  pit: ${PIT_VALUE:0.1}
+
+payment:
+  domestic: 
+    url: ${ONEPAY_DOMESTIC_ENDPOINT:https://mtf.onepay.vn/onecomm-pay/vpc.op}
+    secretKey: ${DOMESTIC_SECRET_KEY:A3EFDFABA8653DF2342E8DAC29B51AF0}
+    merchantId: ${DOMESTIC_MERCHANT_ID:ONEPAY}
+    accessCode: ${DOMESTIC_ACCESS_CODE:D67342C2}
+    returnUrl: ${DOMESTIC_RETURN_URL:http://localhost:8888/payment/return/domestic}
+    statusQueryUrl: ${ONEPAY_DOMESTICL_STATUS_ENDPOINT:https://mtf.onepay.vn/onecomm-pay/Vpcdps.op}
+    testAmount: 1
+  international: 
+    url: ${ONEPAY_INTERNATIONAL_ENDPOINT:https://mtf.onepay.vn/vpcpay/vpcpay.op}
+    secretKey: ${INTERNATIONAL_SECRET_KEY:6D0870CDE5F24F34F3915FB0045120DB}
+    merchantId: ${INTERNATIONAL_MERCHANT_ID:TESTONEPAY}
+    accessCode: ${INTERNATIONAL_ACCESS_CODE:6BEB2546}
+    returnUrl: ${INTERNATIONAL_RETURN_URL:http://localhost:8888/payment/return/international}
+    statusQueryUrl: ${ONEPAY_INTERNATIONAL_STATUS_ENDPOINT:https://mtf.onepay.vn/vpcpay/Vpcdps.op}
+    testAmount: 1000
+  paymentUser: ${PAYMENT_USER:op01}
+  paymentPassword: ${PAYMENT_PASSWORD:op123456}
+  versionModule: 2
+  queryVersionModule: 1
+  title: F8 payment
+  testMode: ${TEST_MODE:false}
+  promotionCode: ${PROMOTION_CODE:move21}
+  promotionPTUserName: ${PROMOTION_PT_USER_NAME:move21}
+  returnHtml: | 
+    <!DOCTYPE html><html lang="en"><head> <meta charset="UTF-8"> <title>F8</title> <style type="text/css"> *{background: #050E15; color: #fff; font-family: arial;}.container{padding: 100px 30px; text-align: center;}.title{font-size: 24px; line-height: 34px; text-align: center; width: 100%; font-weight: 200; margin-bottom: 40px;}a{-webkit-border-radius: 5px; -moz-border-radius: 5px; -ms-border-radius: 5px; -o-border-radius: 5px; border-radius: 5px; text-transform: uppercase; text-decoration: none; font-size: 14px; line-height: 32px; border: 1px solid #dedede; color: #dedede; padding: 0 10px; display: inline-block;}</style></head><body> <div class="container"> <div class="title">Your payment is: #STATUS#</div><br/><div>#RESPONSE_CODE#</div><br/><a href="f8://payment/#STATUS#">Back to LEEP</a> </div></body></html>
+  paymentSuccessHtml: |
+    <!DOCTYPE html><html lang="en"><head> <meta charset="UTF-8"> <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"> <title>LEEP.APP - TRAIN SMART</title> <style type="text/css"> * { background: #050E15; color: #fff; font-family: arial; } .container { padding: 48px 16px; text-align: center; } .title { font-size: 24px; line-height: 1.2; text-align: center; width: 100%; margin-top: 44px; color: #5fed06; font-weight: bold; letter-spacing: 0; } a { font-size: 16px; line-height: 1.5; color: #5fed06; font-weight: bold; text-decoration: none; letter-spacing: 3px; } .description { font-size: 16px; line-height: 1.5; text-align: center; width: 100%; /*font-weight: 200;*/ margin-top: 48px; letter-spacing: 1px; } .btn { font-size: 16px; line-height: 1.5; font-weight: bold; text-decoration: none; letter-spacing: 3px; -webkit-border-radius: 5px; -moz-border-radius: 5px; -ms-border-radius: 5px; -o-border-radius: 5px; border-radius: 5px; text-transform: uppercase; background-color: #5fed06; color: #050E15; display: inline-block; padding: 12px; width: 100%; } .footer { display: flex; margin-top: 48px; } </style></head><body><div class="container"> <div class="title"> <img src="https://s3-ap-southeast-1.amazonaws.com/cmg-f8/58bf34d1-2ba7-11ea-a0d3-0a580a820367/4fc3bd5a-e7cd-43f3-98ac-8a0eade28fdd-success.png" alt="f8 successful payment" width="48"/> </div> <div class="title">Successful Payment</div> <div class="description"> Congratulations! <br/><br/> #RESPONSE_CODE# <br/><br/> Enjoy! </div> <div class="footer"> <a class="btn" href="f8://payment/#STATUS#"> BACK </a> </div></div></body></html>
+  paymentFailedHtml: |
+    <!DOCTYPE html><html lang="en"><head> <meta charset="UTF-8"> <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"> <title>LEEP.APP - TRAIN SMART</title> <style type="text/css"> * { background: #050E15; color: #fff; font-family: arial; } .container { padding: 48px 16px; text-align: center; } .title { font-size: 24px; line-height: 1.2; text-align: center; width: 100%; margin-top: 44px; color: #FF8E00; font-weight: bold; letter-spacing: 0; } a { font-size: 16px; line-height: 1.5; color: #5fed06; font-weight: bold; text-decoration: none; letter-spacing: 3px; } .description { font-size: 16px; line-height: 1.5; text-align: center; width: 100%; /*font-weight: 200;*/ margin-top: 48px; letter-spacing: 1px; } .btn { font-size: 16px; line-height: 1.5; font-weight: bold; text-decoration: none; letter-spacing: 3px; -webkit-border-radius: 5px; -moz-border-radius: 5px; -ms-border-radius: 5px; -o-border-radius: 5px; border-radius: 5px; text-transform: uppercase; background-color: #5fed06; color: #050E15; display: inline-block; padding: 12px; width: 100%; } .footer { display: flex; margin-top: 48px; } </style></head><body><div class="container"> <div class="title"> <img src="https://s3-ap-southeast-1.amazonaws.com/cmg-f8/58bf34d1-2ba7-11ea-a0d3-0a580a820367/366bb727-328e-4eb0-b61d-239bbff1566e-warning.png" alt="f8 fail payment" width="48" /> </div> <div class="title">Sorry, payment failed!</div> <div class="description"> There was a problem occurring in your payment process. <br/><br/> #RESPONSE_CODE# <br/><br/> or use other payment methods </div> <div class="footer"> <a class="btn" href="f8://payment/#STATUS#"> BACK </a> </div></div></body></html>
+  groupId: ${ONEPAY_GROUP_ID:tsptest}
+  onepayBaseUrl: ${ONEPAY_BASE_URL:https://mtf.onepay.vn}
+  onepayAccessKeyId: ${ONEPAY_ACCESS_KEY_ID:TSPTEST}
+  onepaySecretAccessKey: ${ONEPAY_SECRET_ACCESS_KEY:KEY_cGwNtNm38VwT6WifCFZwtw}
+  onepayRegion: ${ONEPAY_REGION:onepay}
+  onepayService: ${ONEPAY_SERVICE:tsp}
+
+email:
+  recipient: ${EMAIL_RECIPIENT:dungnguyen@leep.app,hannguyen@leep.app}
+  sender: ${EMAIL_SENDER:Leep.app <lisa@leep.app>}
+  subject: ${EMAIL_SUBJECT:COD generation report}
+
+userGrid:
+  clientId: ${USERGRID_CLIENTID:b3U6kvjp4dKQEei_9gpYCoAAaw}
+  clientSecret: ${USERGRID_CLIENTSECRET:b3U6rZ3cYqUmVJjZdpBAdouOZ2eAxo0}
+  
+
+service:
+  sessionUrl: ${SESSION_SERVICE_ENDPOINT:http://localhost:8082} 
+  profileUrl: ${PROFILE_SERVICE_ENDPOINT:http://localhost:9988}
+  onepay: ${ONEPAY_QUERY_ENDPOINT:https://mtf.onepay.vn}
+
+spring.cloud.stream.kafka.binder:
+    zkNodes: ${ZOOKEEPER_ENDPOINT:54.254.246.56:2181}
+    brokers: ${KAFKABROKER_ENDPOINT:54.254.246.56:9092}
+    
+logging.level.asia.cmg.f8.commerce: DEBUG
+logging.level.org.springframework.web.filter.CommonsRequestLoggingFilter: DEBUG
+logging.pattern.console: "%d{yyyy-MMM-dd HH:mm:ss.SSS} %-5level [%thread] %logger{20} %class{20}.%M:%L - %msg%n"
+
+management:
+  context-path: /commerce-management/actuator  

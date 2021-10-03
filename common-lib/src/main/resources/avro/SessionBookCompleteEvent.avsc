@@ -1,0 +1,30 @@
+{
+    "namespace": "asia.cmg.f8.common.event.session",
+    "type": "record",
+    "name": "SessionBookCompleteEvent",
+    "fields": [
+        { "name": "eventId", "type": "string" },
+        { "name": "submittedAt", "type": "long" },
+        {
+            "name":"sessions",
+            "type":{
+                "type": "array",  
+                "items":{
+                            "namespace": "asia.cmg.f8.common.event.session",
+                            "name":"SessionBook",
+                            "type":"record",
+                            "fields":[
+                                {"name":"sessionUuid", "type":"string"},
+                                {"name":"sessionDate", "type":"long"},
+                                {"name":"packageUuid", "type":"string"},
+                                {"name":"newSessionStatus", "type": ["null","string"], "default": null }
+                            ]
+                        }
+                }
+        },
+        { "name": "userId", "type": "string" },
+        { "name": "ptUuid", "type": "string" },
+		{ "name": "ownerUuid", "type": ["null", "string"] },
+        { "name": "bookedBy", "type": ["null", "string"], "default": null }
+    ]
+}

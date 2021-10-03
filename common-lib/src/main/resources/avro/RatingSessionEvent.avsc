@@ -1,0 +1,13 @@
+{
+    "namespace": "asia.cmg.f8.social",
+    "type": "record",
+    "name": "RatingSessionEvent",
+    "fields": [
+        { "name": "eventId", "type": "string" },
+        { "name": "userId", "type": "string" },
+        { "name": "stars", "type": "double" },
+        { "name": "submittedAt", "type": "long" },
+        { "name": "sessionId", "type": "string" },
+        { "name": "userType", "type": "string" }
+    ]
+}

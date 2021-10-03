@@ -1,0 +1,130 @@
+import com.commercehub.gradle.plugin.avro.GenerateAvroJavaTask
+
+buildscript {
+    ext {
+        dependencyManagementVersion = '0.6.1.RELEASE'
+    }
+    repositories {
+        mavenLocal()
+//        maven {
+//            url 'http://nexus.f8.pyco.vn:8081/repository/maven-public'
+//        }
+        maven {
+            url 'http://13.229.81.188:8081/repository/maven-public'
+        }
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+        jcenter()
+        mavenCentral()
+    }
+    dependencies {
+        classpath("io.spring.gradle:dependency-management-plugin:${dependencyManagementVersion}")
+        classpath("com.commercehub.gradle.plugin:gradle-avro-plugin:0.9.0")
+        classpath("net.ltgt.gradle:gradle-errorprone-plugin:0.0.8")
+        classpath("org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:2.2.1")
+        classpath("net.ltgt.gradle:gradle-apt-plugin:0.9")
+    }
+}
+
+repositories {
+    mavenLocal()
+//    maven {
+//        url 'http://nexus.f8.pyco.vn:8081/repository/maven-public'
+//    }
+    maven {
+        url 'http://13.229.81.188:8081/repository/maven-public'
+    }
+    jcenter()
+    mavenCentral()
+}
+
+group = 'asia.cmg.f8'
+version = '1.5.9.43'
+
+apply plugin: "groovy"
+apply plugin: "io.spring.dependency-management"
+apply plugin: "com.commercehub.gradle.plugin.avro"
+apply plugin: "org.sonarqube"
+apply plugin: "net.ltgt.apt"
+apply from: 'java.gradle'
+apply from: 'maven.gradle'
+apply from: 'codequality.gradle'
+
+ext {
+    spockVersion = '1.1-groovy-2.4-rc-2'
+    groovyVersion = '2.4.7' // this version is compatible with spockVersion.
+    springCloudNeflixVersion = "1.2.0.RELEASE"
+    springBootDependencyVersion = "1.4.1.RELEASE"
+}
+
+sonarqube {
+    properties {
+        property "sonar.projectKey", "f8-common-lib"
+        property "sonar.projectName", "f8-common-lib"
+        property "sonar.projectVersion", "${project.version}"
+    }
+}
+
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.cloud:spring-cloud-netflix:${springCloudNeflixVersion}"
+
+        // in case we want to use spring core libraries such as spring-core in project
+        mavenBom "org.springframework.boot:spring-boot-dependencies:${springBootDependencyVersion}"
+    }
+}
+
+// configuration dependencies.
+dependencies {
+
+    compile("org.springframework.cloud:spring-cloud-starter-oauth2:1.1.3.RELEASE")
+    compile("org.springframework.security:spring-security-jwt:1.0.4.RELEASE")
+    compile("org.apache.avro:avro:1.8.1")
+
+    compile("com.google.code.findbugs:jsr305:3.0.1")
+    compile("org.joda:joda-money:0.12")
+    compile("io.reactivex:rxjava:1.1.10")
+
+    compileOnly('org.immutables:value:2.3.9:annotations')
+    apt("org.immutables:value:2.3.9")
+
+    compileOnly("org.springframework:spring-web")
+    compileOnly("org.springframework:spring-messaging")
+    compileOnly("org.springframework.cloud:spring-cloud-stream-schema")
+    compile('net.sf.supercsv:super-csv:2.4.0')
+
+    // don't change version of spring because this version is compatible with version of spring-cloud
+    testCompile("org.springframework.security:spring-security-test:4.1.3.RELEASE")
+    testCompile("org.springframework.boot:spring-boot-test")
+    //testRuntime("org.springframework:spring-webmvc:4.2.7.RELEASE")
+    //testRuntime("org.springframework:spring-core:4.2.7.RELEASE")
+
+    testCompile("org.spockframework:spock-core:$spockVersion") {
+        exclude group: 'org.codehaus.groovy'
+    }
+    testCompile("org.codehaus.groovy:groovy-all:$groovyVersion")
+    testCompile('org.hamcrest:hamcrest-core:1.3') // only necessary if Hamcrest matchers are used
+    testCompile('cglib:cglib-nodep:3.1') // used for spock framework to mock non-interface classes.
+    testCompile('org.objenesis:objenesis:2.1') // used when mocked class has non-default constructor
+
+    testRuntime("org.springframework:spring-web")
+    testRuntime("org.springframework:spring-messaging")
+    testRuntime("org.springframework.cloud:spring-cloud-stream-schema")
+}
+
+avro {
+    stringType = "CharSequence"
+}
+
+// configure code generator
+task generateAvro(type: GenerateAvroJavaTask) {
+    source("src/main/resources/avro")
+    outputDir = file("build/avro")
+}
+compileJava.source(generateAvro.outputs)
+
+// disable integration on CI server.
+test {
+    exclude '**/*ITest*'
+}

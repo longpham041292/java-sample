@@ -1,0 +1,129 @@
+server.port: 9988
+
+feign:
+  url: ${USERGRID_ENDPOINT:http://usergrid.leep.center}/${ORG_NAME:cmg}/${APP_NAME:f8}
+  sessionUrl: ${SESSION_ENDPOINT:http://localhost:8082}
+  commerceUrl: ${COMMERCE_ENDPOINT:http://localhost:7777}
+  connectTimeoutMillis: ${FEIGN_CONNECT_TIMEOUT:60000}
+  readTimeoutMillis: ${FEIGN_READ_TIMEOUT:60000}
+  socialUrl: ${SOCIAL_ENDPOINT:http://localhost:8083}
+hystrix:
+  threadpool:
+      default:
+        # Maximum number of concurrent requests when using thread pools (Default: 10)
+        coreSize: ${HYSTRIX_THREAD_POOL_SIZE:500}
+        # Maximum LinkedBlockingQueue size - -1 for using SynchronousQueue (Default: -1)
+        maxQueueSize: -1
+  command:
+        default:
+          execution:
+            timeout:
+              enabled: false
+            isolation:
+              #          strategy: SEMAPHORE, no thread pool but timeout handling stops to work
+              strategy: THREAD
+              thread:
+                timeoutInMilliseconds: ${THREAD_TIME_OUT:600000}
+          fallback:
+            isolation:
+              semaphore:
+                maxConcurrentRequests: ${HYSTRIX_THREAD_POOL_SIZE:200}
+
+usergrid.baseUrl: ${USERGRID_ENDPOINT:http://localhost:8080}/${ORG_NAME:cmg}/${APP_NAME:f8}
+#logging.level.org: DEBUG
+
+spring.data.elasticsearch:
+  cluster-name: ${ES_CLUSTER_NAME:elasticsearch}
+  cluster-nodes: ${ES_CLUSTER_NODES:localhost:9600}
+
+counter:
+  url: ${COUNTER_ENDPOINT:http://localhost:9981}
+
+userprofile:
+  userGridClientId: ${USERGRID_CLIENTID:YXA6lbnfWtKQEei_9gpYCoAAaw}
+  userGridClientSecret: ${USERGRID_CLIENTSECRET:YXA6khvrxqKqt0ytw-WG_OF8RzOk2KY}
+  elasticIndice: ${ORG_NAME:cmg}
+  elasticType: ${APP_NAME:trainer}
+
+  questionaire:
+    questionLimit: 50
+    answerLimit: 50
+  contact:
+    sizeLoad: 20
+    maxLoad: 50
+  avro:
+    storeFolder: avro
+  profileMedia:
+    cover: ${PROFILE_COVER_MEDIA_ITEMS:3}
+    photo: ${PROFILE_PHOTO_MEDIA_ITEMS:4}
+    client: ${PROFILE_CLIENT_MEDIA_ITEMS:4}
+    video: ${PROFILE_VIDEO_MEDIA_ITEMS:4}
+    caption: ${PROFILE_VIDEO_MEDIA_ITEMS:140}
+
+  dateTimeFormat: ${DATE_TIME_FORMAT:dd/MM/yyyy hh:mm a}
+
+spring.cloud.stream.kafka.binder:
+    zkNodes: ${ZOOKEEPER_ENDPOINT:54.254.246.56:2181}
+    brokers: ${KAFKABROKER_ENDPOINT:54.254.246.56:9092}
+
+spring:
+  application.name: profile-service
+  sleuth:
+    feign:
+      enabled: false
+    integration:
+      enabled: false
+    rxjava:
+      schedulers:
+        hook:
+          enabled: false
+  cloud:
+    stream:
+      bindings:
+        answerOutput:
+          destination: answerTopic
+          contentType: avro/bytes
+        answerInputUG:
+          destination: answerTopic
+          contentType: avro/bytes
+          group: profileUGAnswerTopicGroup
+        answerInputES:
+          destination: answerTopic
+          contentType: avro/bytes
+          group: profileESAnswerTopicGroup
+        resumeRegEmailOut:
+          destination: emailTopic
+          contentType: avro/bytes
+        completeProfileOut:
+          destination: CompleteProfileTopic
+          contentType: avro/bytes
+        completeProfileIn:
+          destination: CompleteProfileTopic
+          contentType: avro/bytes
+          group: profileCompleteProfileGroup
+        changeUser:
+          destination: userInfoTopic
+          contentType: avro/bytes
+          group: profileChangeUserGroup
+        changeUserOut:
+          destination: userInfoTopic
+          contentType: avro/bytes
+        followingOut:
+          destination: followingTopic
+          contentType: avro/bytes
+        followingIn:
+          destination: followingTopic
+          contentType: avro/bytes
+          group: profileFollowingGroup
+        orderCompletedInput:
+          destination: orderCompletedTopic
+          contentType: avro/bytes
+          group: profileOrderCompletedGroup
+        userUnFollowingOut:
+          destination: UserUnFollowingTopic
+          contentType: avro/bytes
+  hateoas:
+    useHalAsDefaultJsonMediaType: false
+management:
+  context-path: /profile-management/actuator
+logging.level.asia.cmg.f8.profile.domain.client.UserClient: DEBUG

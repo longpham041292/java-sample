@@ -1,0 +1,18 @@
+{
+    "namespace": "asia.cmg.f8.session",
+    "type": "record",
+    "name": "ChangeSessionStatusEvent",
+    "fields": [
+        { "name": "eventId", "type": "string" },
+        { "name": "sessionId", "type": "string" },
+        { "name": "oldStatus", "type": "string" },
+        { "name": "newStatus", "type": "string" },
+        { "name": "trainerId", "type": "string" },
+        { "name": "endUserId", "type": "string" },
+        { "name": "packageUuid", "type": ["null","string"], "default": null },
+        { "name": "sessionDate", "type": "long" },
+        { "name": "submittedAt", "type": "long" },
+        { "name": "bookedBy", "type": ["null","string"], "default": null },
+        { "name": "changedBy", "type": ["null","string"], "default": null }
+    ]
+}

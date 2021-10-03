@@ -1,0 +1,16 @@
+{
+    "namespace": "asia.cmg.f8.common.profile",
+    "type": "record",
+    "name": "SignUpUserEvent",
+    "fields": [
+        { "name": "eventId", "type": "string" },
+        { "name": "submittedAt", "type": "long" },
+        { "name": "userId", "type": "string" },
+        { "name": "name", "type": "string" },
+        { "name": "userType", "type": "string" },
+        { "name": "email", "type": "string" },
+        { "name": "picture", "type": "string" },
+        { "name": "language", "type": "string" },
+        { "name": "activated", "type": "boolean" }
+    ]
+}

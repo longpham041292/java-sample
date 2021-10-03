@@ -1,0 +1,14 @@
+{
+    "namespace": "asia.cmg.f8.session",
+    "type": "record",
+    "name": "TransferSessionPackageEvent",
+    "fields": [
+        { "name": "eventId", "type": "string" },
+        { "name": "oldSessionPackageUuid", "type": "string" },
+        { "name": "newSessionPackageUuid", "type": "string" },
+        { "name": "userUuid", "type": "string" },
+        { "name": "oldTrainerUuid", "type": "string" },
+        { "name": "newTrainerUuid", "type": "string" },
+        { "name": "submittedAt", "type": "long" }
+    ]
+}

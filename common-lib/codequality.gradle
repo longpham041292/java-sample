@@ -1,0 +1,18 @@
+apply plugin: 'net.ltgt.errorprone'
+apply plugin: 'checkstyle'
+apply plugin: 'pmd'
+apply plugin: 'jacoco'
+apply plugin: 'project-report'
+
+checkstyle {
+    toolVersion = '7.1.1'
+    configFile = file('codequality/checkstyle/checkstyle.xml')
+}
+
+pmd {
+    ruleSetFiles = files(file('codequality/pmd/ruleset.xml'))
+}
+
+configurations {
+    errorprone.resolutionStrategy.force 'com.google.errorprone:error_prone_core:2.0.13'
+}

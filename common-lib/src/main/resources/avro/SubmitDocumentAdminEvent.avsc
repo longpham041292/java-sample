@@ -1,0 +1,10 @@
+{
+    "namespace": "asia.cmg.f8.common.event.email",
+    "type": "record",
+    "name": "SubmitDocumentAdminEvent",
+    "fields": [
+        { "name": "eventId", "type": "string" },
+        { "name": "userId", "type": "string" },
+        { "name": "submittedAt", "type": "long" }
+    ]
+}

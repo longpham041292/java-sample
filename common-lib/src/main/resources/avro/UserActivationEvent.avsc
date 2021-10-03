@@ -1,0 +1,24 @@
+{
+    "namespace": "asia.cmg.f8.common.user",
+    "type": "record",
+    "name": "UserActivationEvent",
+    "fields": [
+        { "name": "eventId", "type": "string" },
+        { "name": "submittedAt", "type": "long" },
+        { "name": "uuid", "type": "string" },
+        { "name": "name", "type": "string" },
+        { "name": "email", "type": "string" },
+        { "name": "avarta", "type": "string" },
+        { "name": "userName", "type": "string" },
+        { "name": "userCode", "type": "string" },
+        { "name": "clubCode", "type": "string" },
+        { "name": "userType", "type": "string" },
+        { "name": "joinedDate", "type": "long" },
+        { "name": "activated", "type": "int" },
+        { "name": "emailValidated", "type": "int" },
+        { "name": "documentStatus", "type": ["null","string"], "default": null },
+        { "name": "level", "type": ["null","string"], "default": null },
+        { "name": "phone", "type": ["null","string"], "default": null },
+        { "name": "gender", "type": "int" }
+    ]
+}

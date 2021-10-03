@@ -1,0 +1,179 @@
+buildscript {
+    ext {
+        springBootVersion = '1.4.1.RELEASE'
+        dependencyManagementVersion = '0.6.1.RELEASE'
+    }
+    repositories {
+        mavenLocal()
+//        maven {
+//            url 'http://nexus.f8.pyco.vn:8081/repository/maven-public'
+//        }
+        maven {
+            url 'http://13.229.81.188:8081/repository/maven-public'
+        }
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+        jcenter()
+        mavenCentral()
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+        classpath("io.spring.gradle:dependency-management-plugin:${dependencyManagementVersion}")
+        classpath("net.ltgt.gradle:gradle-errorprone-plugin:0.0.8")
+        classpath "com.commercehub.gradle.plugin:gradle-avro-plugin:0.9.0"
+        classpath("net.ltgt.gradle:gradle-apt-plugin:0.9")
+        classpath("se.transmode.gradle:gradle-docker:1.2")
+        classpath "org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:2.2.1"
+    }
+}
+
+ext {
+    spockVersion = '1.1-groovy-2.4-rc-2'
+    groovyVersion = '2.4.7' // this version is compatible with spockVersion.
+    springCloudNeflixVersion = "1.2.0.RELEASE"
+    springBootDependencyVersion = "1.4.1.RELEASE"
+    HikariCP_version = "2.5.1"
+    common_lib = "1.5.9.41"
+    hibernate_entitymanager_version = "5.2.3.Final"
+}
+
+repositories {
+    mavenLocal()
+//    maven {
+//        url 'http://nexus.f8.pyco.vn:8081/repository/maven-public'
+//    }
+    maven {
+        url 'http://13.229.81.188:8081/repository/maven-public'
+    }
+    jcenter()
+    mavenCentral()
+}
+
+// don't move this to anywhere else
+group = 'asia.cmg.f8'
+version = '1.0'
+
+apply plugin: 'java'
+apply plugin: 'groovy'
+apply plugin: 'project-report'
+apply plugin: 'spring-boot'
+apply plugin: 'io.spring.dependency-management'
+apply plugin: 'net.ltgt.errorprone'
+apply plugin: 'net.ltgt.apt'
+apply plugin: 'checkstyle'
+apply plugin: 'pmd'
+apply plugin: 'com.commercehub.gradle.plugin.avro'
+apply plugin: 'idea'
+apply plugin: 'eclipse'
+apply plugin: "org.sonarqube"
+apply from: 'docker.gradle'
+
+ext['hibernate.version'] = '${hibernate_entitymanager_version}'
+
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.cloud:spring-cloud-netflix:${springCloudNeflixVersion}"
+        // in case we want to use spring core libraries such as spring-core in project
+        mavenBom "org.springframework.boot:spring-boot-dependencies:${springBootDependencyVersion}"
+        mavenBom 'org.springframework.cloud:spring-cloud-dependencies:Camden.RELEASE'
+    }
+}
+
+sonarqube {
+    properties {
+        property "sonar.projectKey", "f8-commerce-service"
+        property "sonar.projectName", "f8-commerce-service"
+        property "sonar.projectVersion", "${project.version}"
+    }
+}
+
+checkstyle {
+    toolVersion = '7.1.1'
+    configFile = file('codequality/checkstyle/checkstyle.xml')
+}
+
+pmd {
+    ruleSetFiles = files(file('codequality/pmd/ruleset.xml'))
+}
+
+compileJava {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+    options.encoding = 'UTF-8'
+}
+
+compileJava.options*.compilerArgs = [
+        "-Xlint:serial", "-Xlint:varargs", "-Xlint:cast", "-Xlint:classfile",
+        "-Xlint:dep-ann", "-Xlint:divzero", "-Xlint:empty", "-Xlint:finally",
+        "-Xlint:overrides", "-Xlint:path", "-Xlint:processing", "-Xlint:static",
+        "-Xlint:try", "-Xlint:fallthrough", "-Xlint:rawtypes", "-Xlint:deprecation",
+        "-Xlint:unchecked", "-Xlint:-options"
+]
+
+compileTestJava.options*.compilerArgs = [
+        "-Xlint:serial", "-Xlint:-varargs", "-Xlint:cast", "-Xlint:classfile",
+        "-Xlint:dep-ann", "-Xlint:divzero", "-Xlint:empty", "-Xlint:finally",
+        "-Xlint:overrides", "-Xlint:path", "-Xlint:processing", "-Xlint:static",
+        "-Xlint:try", "-Xlint:-fallthrough", "-Xlint:-rawtypes", "-Xlint:-deprecation",
+        "-Xlint:-unchecked", "-Xlint:-options"]
+
+configurations {
+    errorprone.resolutionStrategy.force 'com.google.errorprone:error_prone_core:2.0.13'
+}
+
+dependencies {
+
+    compile("org.springframework.boot:spring-boot-starter-web")
+    compile("org.springframework.boot:spring-boot-starter-data-jpa")
+    compile("org.springframework.boot:spring-boot-starter-hateoas")
+	compile("org.springframework.boot:spring-boot-starter-thymeleaf")
+
+    compile 'org.springframework.cloud:spring-cloud-starter-stream-kafka'
+    compile("org.springframework.cloud:spring-cloud-stream-schema")
+    compile("org.springframework.cloud:spring-cloud-stream-binder-kafka")
+    compile("org.springframework.cloud:spring-cloud-starter-hystrix")
+    compile("org.springframework.cloud:spring-cloud-starter-feign")
+
+    // -- required for Sleuth
+    compile("org.springframework.cloud:spring-cloud-starter-sleuth")
+    compile("org.springframework.cloud:spring-cloud-sleuth-zipkin-stream")
+    //compile("org.springframework.cloud:spring-cloud-stream-binder-kafka")
+
+    compile("com.netflix.feign:feign-jackson:8.14.4")
+
+	compile("org.apache.avro:avro:1.8.1")
+
+    compile("asia.cmg.f8:common-lib:${common_lib}")
+	
+	compile group: 'com.google.code.gson', name: 'gson', version: '2.7'
+	
+	compile group: 'one.util', name: 'streamex', version: '0.6.1'
+
+    apt("org.immutables:value:2.3.9")
+    compileOnly('org.immutables:value:2.3.9:annotations')
+
+    compile("javax.inject:javax.inject:1")
+
+    runtime("mysql:mysql-connector-java")
+    compile("com.zaxxer:HikariCP:${HikariCP_version}") {
+        exclude(module: 'tools')
+    }
+    compile("org.hibernate:hibernate-core:${hibernate_entitymanager_version}")
+    compile("org.hibernate:hibernate-ehcache:${hibernate_entitymanager_version}")
+
+    testCompile("org.springframework.boot:spring-boot-starter-test")
+    testCompile("org.assertj:assertj-core:3.5.2")
+    testCompile("org.spockframework:spock-core:$spockVersion") {
+        exclude group: 'org.codehaus.groovy'
+    }
+    testCompile("org.codehaus.groovy:groovy-all:$groovyVersion")
+    testCompile('org.hamcrest:hamcrest-core:1.3') // only necessary if Hamcrest matchers are used
+    testCompile('cglib:cglib-nodep:3.1') // used for spock framework to mock non-interface classes.
+    testCompile('org.objenesis:objenesis:2.1') // used when mocked class has non-default constructor
+}
+
+task wrapper(type: Wrapper) {
+    description = "Generates gradlew[.bat] scripts"
+    gradleVersion = '3.1'
+}

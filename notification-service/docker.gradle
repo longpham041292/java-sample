@@ -1,0 +1,29 @@
+apply plugin: 'java'
+apply plugin: 'docker'
+
+ext {
+    archive = "${project.name}-${project.version}.jar"
+}
+
+build {
+    doLast {
+        copy {
+            from file("${libsDir}/${tasks.jar.archiveName}")
+            into file("${buildDir}/docker")
+        }
+    }
+}
+
+docker {
+    baseImage "anapsix/alpine-java:8_server-jre"
+    maintainer "Tam Nguyen <thanhtam.nguyen@pyramid-consulting.com>"
+}
+
+task docker(type: Docker) {
+    dependsOn build
+    tagVersion = 'latest'
+    tag = "f8/notification-service"
+    addFile("${archive}", "/opt")
+    exposePort(8080)
+    entryPoint(['java', '-jar', "/opt/${archive}"])
+}
